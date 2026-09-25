@@ -1,9 +1,21 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import Postcard from "./Postcard";
 import { photos } from "@/lib/photos";
+
+// Resting scatters per breakpoint. Desktop is a loose 3x2 across the wide
+// board; mobile is a two-column zigzag so no caption hides under a neighbor
+// and the board fills top to bottom.
+const DESKTOP_POSITIONS = [
+  { x: "4%", y: "4%" }, { x: "36%", y: "0%" }, { x: "68%", y: "6%" },
+  { x: "10%", y: "46%" }, { x: "42%", y: "44%" }, { x: "70%", y: "48%" }
+];
+const MOBILE_POSITIONS = [
+  { x: "2%", y: "2%" }, { x: "52%", y: "10%" }, { x: "4%", y: "34%" },
+  { x: "50%", y: "42%" }, { x: "2%", y: "66%" }, { x: "52%", y: "72%" }
+];
 
 /**
  * PostcardWall — the "pop" feature.
@@ -18,11 +30,16 @@ export default function PostcardWall() {
   const bringToFront = (id: string) =>
     setZOrder((prev) => [...prev.filter((x) => x !== id), id]);
 
-  // resting positions: a loose scatter in a 3x2 arrangement
-  const positions = [
-    { x: "4%", y: "4%" }, { x: "36%", y: "0%" }, { x: "68%", y: "6%" },
-    { x: "10%", y: "46%" }, { x: "42%", y: "44%" }, { x: "70%", y: "48%" }
-  ];
+  const [isWide, setIsWide] = useState(true);
+  useEffect(() => {
+    const query = window.matchMedia("(min-width: 768px)");
+    const update = () => setIsWide(query.matches);
+    update();
+    query.addEventListener("change", update);
+    return () => query.removeEventListener("change", update);
+  }, []);
+
+  const positions = isWide ? DESKTOP_POSITIONS : MOBILE_POSITIONS;
 
   return (
     <section id="wall" className="border-t-2 border-ink px-6 py-16 md:px-14">
