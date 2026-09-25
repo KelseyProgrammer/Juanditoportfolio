@@ -166,13 +166,13 @@ Paper has corners: border-radius is 0 on everything made of paper or ink — pos
 
 ### Cards / Containers (Postcard — signature component)
 - **Corner Style:** Sharp (0px)
-- **Front:** Pure White mat, 12px padding with a 32px bottom lip, 4:5 photo crop biased toward faces (`object-position: 50% 25%`), Special Elite caption centered in the lip
-- **Back:** Postcard Cream, "POST CARD" stamp header in rust, handwritten note in display serif, dashed stamp box; revealed by a 3D Y-flip (spring 260/26)
+- **Front:** Pure White mat, 12px padding with a 32px bottom lip, 2:3 photo window — the archive's native frame, so portraits crop little or not at all (`object-position: 50% 20%` guards the rest), Special Elite caption centered in the lip
+- **Back:** Postcard Cream, "POST CARD" stamp header in rust, handwritten note in display serif, and a dashed stamp box holding the firebird emblem (Trans Am-style spread-wing bird, hand-drawn SVG in rust); revealed by a 3D Y-flip (spring 260/26)
 - **Behavior:** Rests tilted; drags with momentum inside the corkboard; grabbing lifts (see Elevation); a true tap flips, a drag never does
 
 ### Darkroom Print (signature component)
 - Postcard Cream mat (8px), photo at native aspect, deep dark shadow
-- Arrives as a blurred inverted negative under a 45% Safelight Red multiply wash; develops once on viewport entry — a single 1.4s ease-out pour (`cubic-bezier(0.22,1,0.36,1)`) to full color, honoring `prefers-reduced-motion`
+- Arrives as a blurred inverted negative under a 45% Safelight Red multiply wash; develops once on viewport entry — a single 1.4s ease-out pour (`cubic-bezier(0.22,1,0.36,1)`) to full color, honoring `prefers-reduced-motion`. Implemented as a one-shot CSS animation ending on `filter: none` with the overlay removed after the pour, so no print retains a compositor layer; figures use `content-visibility: auto`
 - Caption row: shoot name (paper 70%) left, "FR ###" frame number (safelight 80%) right, Special Elite 11px
 
 ### Navigation

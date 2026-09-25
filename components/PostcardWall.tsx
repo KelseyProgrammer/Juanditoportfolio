@@ -20,8 +20,8 @@ export default function PostcardWall() {
 
   // resting positions: a loose scatter in a 3x2 arrangement
   const positions = [
-    { x: "4%", y: "6%" }, { x: "36%", y: "0%" }, { x: "68%", y: "8%" },
-    { x: "10%", y: "48%" }, { x: "42%", y: "44%" }, { x: "70%", y: "52%" }
+    { x: "4%", y: "4%" }, { x: "36%", y: "0%" }, { x: "68%", y: "6%" },
+    { x: "10%", y: "46%" }, { x: "42%", y: "44%" }, { x: "70%", y: "48%" }
   ];
 
   return (
@@ -35,7 +35,7 @@ export default function PostcardWall() {
 
       <div
         ref={boardRef}
-        className="relative h-[900px] w-full overflow-hidden rounded-sm bg-[#E6D9C0] md:h-[780px]"
+        className="relative h-[1000px] w-full overflow-hidden rounded-sm bg-[#E6D9C0] md:h-[1000px]"
         style={{
           backgroundImage:
             "radial-gradient(rgba(46,38,32,0.08) 1px, transparent 1px)",

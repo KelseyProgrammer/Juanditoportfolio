@@ -5,8 +5,8 @@ export default function Contact() {
         Wish you were here — let&apos;s plan the next shoot.
       </h2>
       <div className="flex flex-wrap gap-6">
-        <a href="mailto:[YOUR EMAIL]" className="bg-ink px-6 py-3 text-sm tracking-wide text-paper hover:bg-rust">
-          Email — [YOUR EMAIL]
+        <a href="mailto:Juanherrep@yahoo.com" className="bg-ink px-6 py-3 text-sm tracking-wide text-paper hover:bg-rust">
+          Email — Juanherrep@yahoo.com
         </a>
         <a href="https://www.instagram.com/juanditobandito" target="_blank" rel="noreferrer" className="py-3 font-stamp text-sm text-rust hover:underline">
           @juanditobandito

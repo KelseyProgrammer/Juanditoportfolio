@@ -1,72 +1,66 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useMemo, useState } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useInView, useReducedMotion } from "framer-motion";
 import { gallery, type GalleryPhoto } from "@/lib/photos";
 
 /**
  * The Darkroom — every frame in the archive, developed on entry.
  * Each print arrives as a washed, blurred negative under a red safelight
- * and pours into full color once it enters the viewport — a single
- * time-based develop per print, so the motion stays fluid regardless
- * of how the visitor scrolls.
+ * and pours into full color once it enters the viewport.
  *
- * The masonry is built from real flex columns balanced by aspect ratio,
- * not CSS multicol: IntersectionObserver mis-reports element rects at
- * column fragment boundaries, which left the first print of each CSS
- * column stuck as a negative.
+ * Performance notes, hard-won:
+ * - The develop is a one-shot CSS animation ending on `filter: none`, so
+ *   no print keeps a GPU layer after developing; the safelight overlay
+ *   (a mix-blend layer) is removed from the DOM when the pour finishes.
+ * - `content-visibility: auto` lets the browser skip rendering prints
+ *   far offscreen.
+ * - The masonry is real flex columns balanced by aspect ratio, not CSS
+ *   multicol: IntersectionObserver mis-reports element rects at column
+ *   fragment boundaries, which left the first print of each CSS column
+ *   stuck as a negative.
  */
 
-const DEVELOP = { duration: 1.4, ease: [0.22, 1, 0.36, 1] as const };
-
-const printVariants = {
-  negative: {
-    filter:
-      "invert(1) sepia(0.35) saturate(0.3) brightness(1.12) contrast(0.85) blur(8px)"
-  },
-  developed: {
-    filter:
-      "invert(0) sepia(0) saturate(1) brightness(1) contrast(1) blur(0px)",
-    transition: DEVELOP
-  }
-};
-
-const safelightVariants = {
-  negative: { opacity: 0.45 },
-  developed: { opacity: 0, transition: DEVELOP }
-};
-
 function DarkroomPrint({ photo, index }: { photo: GalleryPhoto; index: number }) {
+  const ref = useRef<HTMLElement>(null);
+  const inView = useInView(ref, { once: true, amount: "some" });
   const reduceMotion = useReducedMotion();
+  const [done, setDone] = useState(false);
+
+  const animating = !reduceMotion && !done;
   const frame = String(index + 1).padStart(3, "0");
 
   return (
-    <figure>
+    <figure
+      ref={ref}
+      style={{ contentVisibility: "auto", containIntrinsicSize: "auto 520px" }}
+    >
       <div className="bg-[#FBF6EC] p-2 pb-2 shadow-[0_16px_40px_rgba(0,0,0,0.5)]">
-        <motion.div
-          className="relative overflow-hidden bg-black"
-          initial={reduceMotion ? false : "negative"}
-          whileInView="developed"
-          viewport={{ once: true, amount: "some" }}
+        <div
+          className={`relative overflow-hidden bg-black ${
+            animating ? (inView ? "print-develop" : "print-negative") : ""
+          }`}
+          onAnimationEnd={() => setDone(true)}
         >
-          <motion.div variants={printVariants}>
-            <Image
-              src={photo.src}
-              alt={photo.alt}
-              width={photo.w}
-              height={photo.h}
-              sizes="(max-width: 640px) 92vw, (max-width: 1280px) 46vw, 30vw"
-              draggable={false}
-              className="block h-auto w-full"
-            />
-          </motion.div>
-          <motion.div
-            aria-hidden
-            variants={safelightVariants}
-            className="pointer-events-none absolute inset-0 bg-[#E5301F] mix-blend-multiply"
+          <Image
+            src={photo.src}
+            alt={photo.alt}
+            width={photo.w}
+            height={photo.h}
+            sizes="(max-width: 640px) 92vw, (max-width: 1280px) 46vw, 30vw"
+            draggable={false}
+            className="block h-auto w-full"
           />
-        </motion.div>
+          {animating && (
+            <div
+              aria-hidden
+              className={`pointer-events-none absolute inset-0 bg-[#E5301F] mix-blend-multiply ${
+                inView ? "safelight-off" : "opacity-45"
+              }`}
+            />
+          )}
+        </div>
       </div>
       <figcaption className="mt-2 flex items-baseline justify-between font-stamp text-[11px] uppercase tracking-[0.18em]">
         <span className="text-[#F1E8D6]/70">{photo.caption}</span>

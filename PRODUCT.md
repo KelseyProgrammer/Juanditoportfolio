@@ -26,8 +26,8 @@ Miami-based light with travel range: a photographer rooted in Miami's warm, sun-
 ## Capabilities and Constraints
 
 - 169-frame photo archive across named shoots (portrait, fashion campaign, swim/lifestyle, travel journal), web-optimized at 1800px.
-- Instagram is a live booking channel: @juanditobandito.
-- **Undecided / pending from the user:** booking email (Contact still has `[YOUR EMAIL]`), hero tagline and About bio (bracketed placeholders), and the darkroom "Journal · <date>" captions, which are derived from file dates rather than confirmed shoot names.
+- Booking channels: Juanherrep@yahoo.com and Instagram @juanditobandito.
+- **Undecided / pending from the user:** hero tagline and About bio (bracketed placeholders), and the darkroom "Journal · <date>" captions, which are derived from file dates rather than confirmed shoot names.
 
 ## Brand Commitments
 

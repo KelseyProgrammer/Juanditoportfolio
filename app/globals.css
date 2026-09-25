@@ -19,3 +19,32 @@ body {
   outline: 2px solid #B0522E;
   outline-offset: 3px;
 }
+
+/* Darkroom develop: runs once per print as a compositor-friendly CSS
+   animation. Ending on `filter: none` releases the GPU layer the filter
+   would otherwise pin for every print on the page. */
+.print-negative {
+  filter: invert(1) sepia(0.35) saturate(0.3) brightness(1.12) contrast(0.85) blur(6px);
+}
+
+.print-develop {
+  animation: develop 1.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes develop {
+  from {
+    filter: invert(1) sepia(0.35) saturate(0.3) brightness(1.12) contrast(0.85) blur(6px);
+  }
+  to {
+    filter: none;
+  }
+}
+
+.safelight-off {
+  animation: safelight-off 1.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes safelight-off {
+  from { opacity: 0.45; }
+  to { opacity: 0; }
+}
