@@ -45,7 +45,7 @@ export default function PostcardWall() {
         {photos.map((photo, i) => (
           <motion.div
             key={photo.id}
-            className="absolute w-[46%] cursor-grab active:cursor-grabbing md:w-[24%]"
+            className="absolute w-[46%] cursor-grab active:cursor-grabbing md:w-[24%] md:touch-none"
             style={{
               left: positions[i].x,
               top: positions[i].y,
@@ -59,6 +59,7 @@ export default function PostcardWall() {
             dragConstraints={boardRef}
             dragElastic={0.12}
             dragMomentum
+            whileHover={{ scale: 1.02, rotate: photo.rotate * 0.5 }}
             whileDrag={{ scale: 1.04, rotate: photo.rotate * 2, boxShadow: "0 30px 50px rgba(46,38,32,0.3)" }}
             onPointerDown={() => bringToFront(photo.id)}
           >

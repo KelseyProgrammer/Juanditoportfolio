@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { motion } from "framer-motion";
 import type { Photo } from "@/lib/photos";
 
@@ -9,14 +9,23 @@ type Props = { photo: Photo; className?: string };
 
 export default function Postcard({ photo, className = "" }: Props) {
   const [flipped, setFlipped] = useState(false);
+  const downPos = useRef<{ x: number; y: number } | null>(null);
 
   return (
     <button
       type="button"
-      onClick={() => setFlipped((f) => !f)}
+      onPointerDown={(e) => {
+        downPos.current = { x: e.clientX, y: e.clientY };
+      }}
+      onClick={(e) => {
+        // Only flip on a true tap — a drag that ends on the card is not a flip.
+        const d = downPos.current;
+        if (d && Math.hypot(e.clientX - d.x, e.clientY - d.y) > 8) return;
+        setFlipped((f) => !f);
+      }}
       aria-label={`${photo.caption}. Click to flip the postcard.`}
       aria-pressed={flipped}
-      className={`group relative block w-full text-left [perspective:1200px] ${className}`}
+      className={`group relative block w-full select-none text-left [perspective:1200px] ${className}`}
     >
       <motion.div
         className="relative w-full [transform-style:preserve-3d]"
@@ -26,7 +35,14 @@ export default function Postcard({ photo, className = "" }: Props) {
         {/* FRONT */}
         <div className="bg-white p-3 pb-8 shadow-postcard [backface-visibility:hidden]">
           <div className="relative aspect-[4/5] overflow-hidden bg-sand/30">
-            <Image src={photo.src} alt={photo.alt} fill sizes="(max-width: 768px) 90vw, 30vw" className="object-cover" />
+            <Image
+              src={photo.src}
+              alt={photo.alt}
+              fill
+              sizes="(max-width: 768px) 90vw, 30vw"
+              draggable={false}
+              className="object-cover object-[50%_25%]"
+            />
           </div>
           <div className="mt-3 text-center font-stamp text-[13px] tracking-wide">{photo.caption}</div>
         </div>

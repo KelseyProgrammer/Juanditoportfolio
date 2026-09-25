@@ -15,6 +15,17 @@ export type GalleryPhoto = {
   h: number;          // intrinsic pixel height of the export
 };
 
+// The hero postcard — kept separate from the Desk so the same frame
+// never appears twice above the fold. Any gallery src works here.
+export const heroPhoto: Photo = {
+  id: "hero",
+  src: "/photos/annie-01.jpg",
+  alt: "Annie, editorial portrait",
+  caption: "Annie",
+  note: "First frame after the rain stopped.",
+  rotate: -3
+};
+
 // The Desk — six postcards. Swap picks, captions and notes freely;
 // any src from the gallery below works here too.
 export const photos: Photo[] = [

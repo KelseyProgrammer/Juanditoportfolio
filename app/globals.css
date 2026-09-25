@@ -9,3 +9,13 @@ html {
 body {
   background-color: #F1E8D6;
 }
+
+::selection {
+  background-color: #B0522E;
+  color: #FBF6EC;
+}
+
+:focus-visible {
+  outline: 2px solid #B0522E;
+  outline-offset: 3px;
+}
