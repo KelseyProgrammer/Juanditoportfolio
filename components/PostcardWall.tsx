@@ -27,7 +27,7 @@ export default function PostcardWall() {
   return (
     <section id="wall" className="border-t-2 border-ink px-6 py-16 md:px-14">
       <div className="mb-8 flex items-baseline justify-between">
-        <h2 className="font-display text-3xl md:text-4xl">The Desk</h2>
+        <h2 className="font-display text-3xl text-ink/75 md:text-4xl">The Desk</h2>
         <p className="font-stamp text-xs uppercase tracking-widest text-inkfaint">
           Drag to rearrange · Click to flip
         </p>

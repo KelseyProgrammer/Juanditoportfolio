@@ -1,7 +1,7 @@
 export default function Contact() {
   return (
     <footer id="contact" className="flex flex-col gap-6 border-t-2 border-ink px-6 pb-12 pt-16 md:px-14">
-      <h2 className="max-w-xl font-display text-3xl md:text-5xl">
+      <h2 className="max-w-xl font-display text-3xl leading-[1.6] text-ink/75 md:text-4xl">
         Wish you were here — let&apos;s plan the next shoot.
       </h2>
       <div className="flex flex-wrap gap-6">

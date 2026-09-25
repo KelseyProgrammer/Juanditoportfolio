@@ -103,7 +103,7 @@ export default function Darkroom() {
   return (
     <section id="darkroom" className="border-t-2 border-ink bg-[#191410] px-6 py-16 md:px-14">
       <div className="mb-10 flex flex-wrap items-baseline justify-between gap-3">
-        <h2 className="font-display text-3xl text-[#F1E8D6] md:text-4xl">The Darkroom</h2>
+        <h2 className="font-display text-3xl text-[#F1E8D6]/75 md:text-4xl">The Darkroom</h2>
         <p className="font-stamp text-xs uppercase tracking-widest text-[#E5301F]">
           Scroll to develop · {gallery.length} frames
         </p>

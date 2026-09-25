@@ -122,7 +122,7 @@ A sun-warmed paper palette struck with rubber-stamp rust, inverting once into da
 **Character:** Rough hand-lettered brush caps do the talking — dry, gritty stroke edges that read as faded marker on paper, but stay fully legible — a typewriter does the labeling, and a quiet workhorse sans explains. Rock Salt runs wide and caps-only in feel, so display sizes stay moderate (≤2.25rem) with generous 1.7 leading. Special Elite brings the analog, hand-struck texture that makes labels feel stamped rather than typeset.
 
 ### Hierarchy
-- **Display** (400, clamp ~1.5rem→2.25rem, line-height 1.7): Hero headline and section-scale statements. Generous leading for the rough caps; hard line breaks only ≥640px.
+- **Display** (400, clamp ~1.875rem→2.75rem, line-height 1.6–1.7): Hero headline and section-scale statements. Generous leading for the rough caps; hard line breaks only ≥640px. Headings render at 75% of their surface's text color (ink/75 on paper, cream/75 in the darkroom) for a sun-faded read; body text stays full-strength.
 - **Headline** (400, 1.875–3rem, snug): Section titles ("The Desk", "The Darkroom") and postcard-back notes.
 - **Stamp** (400, 11–13px, letter-spacing 0.14–0.2em, UPPERCASE): Nav links, eyebrows, captions, frame numbers, hints. Always uppercase, always letterspaced, almost always rust or faded.
 - **Body** (400, 16px, line-height 1.625): Bios and supporting prose, max-width ~36rem.
