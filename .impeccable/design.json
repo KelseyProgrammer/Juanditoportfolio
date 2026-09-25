@@ -54,7 +54,7 @@
       }
     },
     "typographyMeta": {
-      "display": { "displayName": "Display Serif", "purpose": "Hero and section headlines; postcard-back notes. Letterpress voice." },
+      "display": { "displayName": "Display Hand", "purpose": "Hero and section headlines; postcard-back notes. Gritty vintage ink handwriting (Homemade Apple); moderate sizes with 1.5 leading." },
       "stamp": { "displayName": "Typewriter Stamp", "purpose": "All labels: nav, eyebrows, captions, frame numbers. Always uppercase and letterspaced." },
       "body": { "displayName": "Body Sans", "purpose": "Bios and supporting prose only." }
     },
@@ -130,7 +130,7 @@
   ],
   "narrative": {
     "northStar": "The Sun Journal",
-    "overview": "The site is a photographer's travel journal kept in Miami light: a desk of handled postcards, a wall of prints developed on the road, everything resting on warm, sun-bleached paper. Nothing on screen is \"UI chrome\" if it can be a physical artifact instead — headings are set like letterpress, labels are struck with a typewriter, accents are rubber-stamped in postmark rust, and photographs arrive as paper objects with weight, tilt, and shadow. The interface recedes; the archive is the argument. Interactive elements lean playful scrapbook: things tilt at imperfect angles, lift when grabbed, land with spring physics, and carry marks of handling. The one deliberate inversion is The Darkroom: a single near-black room inside the paper world where prints develop under a safelight red.",
+    "overview": "The site is a photographer's travel journal kept in Miami light: a desk of handled postcards, a wall of prints developed on the road, everything resting on warm, sun-bleached paper. Nothing on screen is \"UI chrome\" if it can be a physical artifact instead — headings are handwritten in pen, labels are struck with a typewriter, accents are rubber-stamped in postmark rust, and photographs arrive as paper objects with weight, tilt, and shadow. The interface recedes; the archive is the argument. Interactive elements lean playful scrapbook: things tilt at imperfect angles, lift when grabbed, land with spring physics, and carry marks of handling. The one deliberate inversion is The Darkroom: a single near-black room inside the paper world where prints develop under a safelight red.",
     "keyCharacteristics": [
       "Warm paper surfaces; color temperature never goes cool",
       "Photography presented as physical prints and postcards, never as bare rectangles",
@@ -141,7 +141,7 @@
     "rules": [
       { "name": "The Postmark Rule", "body": "Rust is stamped, not painted: it appears on ≤10% of any screen, always on small marks (labels, numbers, hovers, rings) and never as a background fill.", "section": "colors" },
       { "name": "The One Dark Room Rule", "body": "Darkroom Black and Safelight Red exist only inside #darkroom. Every other surface lives on paper.", "section": "colors" },
-      { "name": "The Three Voices Rule", "body": "Serif speaks, typewriter stamps, sans explains. Never a fourth face; never one voice doing another's job (no serif captions, no typewriter paragraphs).", "section": "typography" },
+      { "name": "The Three Voices Rule", "body": "Handwriting speaks, typewriter stamps, sans explains. Never a fourth face; never one voice doing another's job (no handwritten captions in the stamp role, no typewriter paragraphs).", "section": "typography" },
       { "name": "The Paper Casts, Chrome Doesn't Rule", "body": "If it isn't paper, it doesn't get a shadow. Sections divide with 2px ink rules, not elevation.", "section": "elevation" },
       { "name": "The No-Radius Rule", "body": "Never rounded-md softening. A corner is sharp (0px) or a perfect circle (9999px); nothing in between.", "section": "shapes" }
     ],

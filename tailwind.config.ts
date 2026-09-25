@@ -16,7 +16,7 @@ const config: Config = {
         sand: "#C98A4A"
       },
       fontFamily: {
-        display: ["var(--font-display)", "serif"],
+        display: ["var(--font-display)", "cursive"],
         stamp: ["var(--font-stamp)", "monospace"],
         body: ["var(--font-body)", "sans-serif"]
       },

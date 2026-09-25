@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { DM_Serif_Display, Special_Elite, Work_Sans } from "next/font/google";
+import { Homemade_Apple, Special_Elite, Work_Sans } from "next/font/google";
 import "./globals.css";
 
-const display = DM_Serif_Display({
+const display = Homemade_Apple({
   subsets: ["latin"],
   weight: "400",
   variable: "--font-display"

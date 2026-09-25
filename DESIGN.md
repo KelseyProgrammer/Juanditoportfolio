@@ -14,10 +14,10 @@ colors:
   safelight: "#E5301F"
 typography:
   display:
-    fontFamily: "DM Serif Display, Georgia, serif"
-    fontSize: "clamp(2.25rem, 6vw, 4.5rem)"
+    fontFamily: "Homemade Apple, cursive"
+    fontSize: "clamp(1.875rem, 4vw, 3rem)"
     fontWeight: 400
-    lineHeight: 1.02
+    lineHeight: 1.5
   stamp:
     fontFamily: "Special Elite, Courier New, monospace"
     fontSize: "0.6875rem"
@@ -67,7 +67,7 @@ components:
 The site is a photographer's travel journal kept in Miami light: a desk of handled
 postcards, a wall of prints developed on the road, everything resting on warm,
 sun-bleached paper. Nothing on screen is "UI chrome" if it can be a physical
-artifact instead — headings are set like letterpress, labels are struck with a
+artifact instead — headings are handwritten in pen, labels are struck with a
 typewriter, accents are rubber-stamped in postmark rust, and photographs arrive
 as paper objects with weight, tilt, and shadow. The interface recedes; the
 archive is the argument.
@@ -115,20 +115,20 @@ A sun-warmed paper palette struck with rubber-stamp rust, inverting once into da
 
 ## Typography
 
-**Display Font:** DM Serif Display (with Georgia, serif)
+**Display Font:** Homemade Apple (with cursive fallback; single 400 weight)
 **Body Font:** Work Sans (with system-ui, sans-serif)
 **Label/Mono Font:** Special Elite (with Courier New, monospace)
 
-**Character:** A letterpress serif that does the talking, a typewriter that does the labeling, and a quiet workhorse sans that explains. The serif is warm and editorial at very large sizes; Special Elite brings the analog, hand-struck texture that makes labels feel stamped rather than typeset.
+**Character:** A gritty vintage ink hand that does the talking, a typewriter that does the labeling, and a quiet workhorse sans that explains. Homemade Apple's irregular baseline and shaky strokes make every heading and postcard note read as writing on an old letter; it is wide with tall ascenders, so display sizes stay moderate (≤3rem) with generous 1.5 leading. Special Elite brings the analog, hand-struck texture that makes labels feel stamped rather than typeset.
 
 ### Hierarchy
-- **Display** (400, clamp ~2.25rem→4.5rem, line-height 1.02): Hero headline and section-scale statements. Tight leading; hard line breaks only ≥640px.
+- **Display** (400, clamp ~1.875rem→3rem, line-height 1.5): Hero headline and section-scale statements. Generous leading for the hand's ascenders; hard line breaks only ≥640px.
 - **Headline** (400, 1.875–3rem, snug): Section titles ("The Desk", "The Darkroom") and postcard-back notes.
 - **Stamp** (400, 11–13px, letter-spacing 0.14–0.2em, UPPERCASE): Nav links, eyebrows, captions, frame numbers, hints. Always uppercase, always letterspaced, almost always rust or faded.
 - **Body** (400, 16px, line-height 1.625): Bios and supporting prose, max-width ~36rem.
 
 ### Named Rules
-**The Three Voices Rule.** Serif speaks, typewriter stamps, sans explains. Never a fourth face; never one voice doing another's job (no serif captions, no typewriter paragraphs).
+**The Three Voices Rule.** Handwriting speaks, typewriter stamps, sans explains. Never a fourth face; never one voice doing another's job (no handwritten captions in the stamp role, no typewriter paragraphs).
 
 ## Layout
 
@@ -167,7 +167,7 @@ Paper has corners: border-radius is 0 on everything made of paper or ink — pos
 ### Cards / Containers (Postcard — signature component)
 - **Corner Style:** Sharp (0px)
 - **Front:** Pure White mat, 12px padding with a 32px bottom lip, 2:3 photo window — the archive's native frame, so portraits crop little or not at all (`object-position: 50% 20%` guards the rest), Special Elite caption centered in the lip
-- **Back:** Postcard Cream, "POST CARD" stamp header in rust, handwritten note in display serif, and a dashed stamp box holding the firebird emblem (Trans Am-style spread-wing bird, hand-drawn SVG in rust); revealed by a 3D Y-flip (spring 260/26)
+- **Back:** Postcard Cream, "POST CARD" stamp header in rust, note written in the display hand, and a dashed stamp box holding a lightning bolt outline (hand-drawn SVG stroke in rust); revealed by a 3D Y-flip (spring 260/26)
 - **Behavior:** Rests tilted; drags with momentum inside the corkboard; grabbing lifts (see Elevation); a true tap flips, a drag never does
 
 ### Darkroom Print (signature component)
@@ -176,7 +176,7 @@ Paper has corners: border-radius is 0 on everything made of paper or ink — pos
 - Caption row: shoot name (paper 70%) left, "FR ###" frame number (safelight 80%) right, Special Elite 11px
 
 ### Navigation
-- Flat paper bar, 2px ink bottom rule; display-serif wordmark left, Special Elite uppercase links right (hover: rust); wraps to a second row under 640px — no hamburger
+- Flat paper bar, 2px ink bottom rule; handwritten wordmark left (reads as a signature), Special Elite uppercase links right (hover: rust); wraps to a second row under 640px — no hamburger
 
 ### The Postmark (signature mark)
 - Hand-drawn SVG: double-ring circle ("MIAMI, FLA / PAR AVION / USA") with three wavy cancellation bars, in rust, rotated -6°; scales 150→200px. Pairs with stamp-voice eyebrow text.
