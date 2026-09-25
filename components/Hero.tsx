@@ -5,11 +5,9 @@ import { heroPhoto } from "@/lib/photos";
 function Postmark() {
   return (
     <svg
-      width="118"
-      height="44"
       viewBox="0 0 118 44"
       aria-hidden
-      className="-rotate-6 shrink-0 text-rust"
+      className="-rotate-6 h-auto w-[150px] shrink-0 text-rust md:w-[200px]"
     >
       <g fill="none" stroke="currentColor">
         <circle cx="22" cy="22" r="20.5" strokeWidth="1.4" />
@@ -33,9 +31,9 @@ export default function Hero() {
   return (
     <section className="flex flex-wrap items-center gap-12 px-6 pb-16 pt-20 md:px-14">
       <div className="flex min-w-0 flex-1 basis-[420px] flex-col gap-5">
-        <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
           <Postmark />
-          <p className="font-stamp text-[13px] uppercase tracking-[0.15em] text-rust">
+          <p className="font-stamp text-base uppercase tracking-[0.18em] text-rust md:text-xl">
             Postcards from the road
           </p>
         </div>
