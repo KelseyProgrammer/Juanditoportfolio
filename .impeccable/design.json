@@ -1,0 +1,163 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-25T00:00:00Z",
+  "title": "Design System: Juandito — Sun Journal",
+  "extensions": {
+    "colorMeta": {
+      "paper": {
+        "role": "neutral",
+        "displayName": "Sun-Bleached Paper",
+        "canonical": "#F1E8D6",
+        "tonalRamp": ["#2E2A1F", "#4E4735", "#6F664C", "#918565", "#B3A57F", "#D4C6A3", "#F1E8D6", "#FAF5EA"]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Warm Ink",
+        "canonical": "#2E2620",
+        "tonalRamp": ["#0F0C09", "#1D1712", "#2E2620", "#4A3F35", "#6B5D50", "#93836F", "#BFB09B", "#E5DCCB"]
+      },
+      "inkfaint": {
+        "role": "neutral",
+        "displayName": "Faded Caption",
+        "canonical": "#5C5245",
+        "tonalRamp": ["#17130E", "#2C261D", "#42392D", "#5C5245", "#7C7060", "#9E917F", "#C2B6A4", "#E5DDD0"]
+      },
+      "rust": {
+        "role": "primary",
+        "displayName": "Postmark Rust",
+        "canonical": "#B0522E",
+        "tonalRamp": ["#2B120A", "#4A1F10", "#6B2E17", "#8C401F", "#B0522E", "#C97B52", "#DFA687", "#F3D6C4"]
+      },
+      "sand": {
+        "role": "tertiary",
+        "displayName": "Golden Hour Sand",
+        "canonical": "#C98A4A",
+        "tonalRamp": ["#2E1E0D", "#4E3418", "#704B23", "#93622F", "#C98A4A", "#D9A671", "#E8C49C", "#F5E2CB"]
+      },
+      "safelight": {
+        "role": "tertiary",
+        "displayName": "Safelight Red",
+        "canonical": "#E5301F",
+        "tonalRamp": ["#330705", "#5C0F09", "#88170D", "#B62112", "#E5301F", "#EC6350", "#F39685", "#F9CBC2"]
+      },
+      "darkroom": {
+        "role": "neutral",
+        "displayName": "Darkroom Black",
+        "canonical": "#191410",
+        "tonalRamp": ["#191410", "#2E261E", "#453A2E", "#5D4F40", "#766453", "#9B8B77", "#C1B4A0", "#E5DDD0"]
+      },
+      "postcard-cream": {
+        "role": "neutral",
+        "displayName": "Postcard Cream",
+        "canonical": "#FBF6EC",
+        "tonalRamp": ["#322D22", "#544C39", "#776C52", "#9A8D6C", "#BDAF8B", "#DCD0AF", "#FBF6EC", "#FDFBF5"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display Serif", "purpose": "Hero and section headlines; postcard-back notes. Letterpress voice." },
+      "stamp": { "displayName": "Typewriter Stamp", "purpose": "All labels: nav, eyebrows, captions, frame numbers. Always uppercase and letterspaced." },
+      "body": { "displayName": "Body Sans", "purpose": "Bios and supporting prose only." }
+    },
+    "shadows": [
+      { "name": "postcard", "value": "0 12px 28px rgba(46,38,32,0.18)", "purpose": "Paper objects at rest on light surfaces; warm ink-tinted." },
+      { "name": "postcard-lifted", "value": "0 30px 50px rgba(46,38,32,0.3)", "purpose": "While dragging a card; paired with scale 1.04 and doubled tilt." },
+      { "name": "print-dark", "value": "0 16px 40px rgba(0,0,0,0.5)", "purpose": "Darkroom prints against Darkroom Black." }
+    ],
+    "motion": [
+      { "name": "develop", "value": "1.4s cubic-bezier(0.22, 1, 0.36, 1)", "purpose": "The darkroom develop pour: negative to full color, once per print on viewport entry." },
+      { "name": "spring-flip", "value": "spring(stiffness 260, damping 26)", "purpose": "Postcard 3D flip and back-to-top enter/exit." },
+      { "name": "spring-land", "value": "spring(stiffness 120, damping 16)", "purpose": "Desk card entrances and drag release landings." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "xl", "value": "1280px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The booking CTA: ink slab that stamps to rust on hover.",
+      "html": "<a href=\"#\" class=\"ds-btn-primary\">Email — hello@example.com</a>",
+      "css": ".ds-btn-primary { display: inline-block; background: #2E2620; color: #F1E8D6; padding: 12px 24px; font-family: 'Work Sans', system-ui, sans-serif; font-size: 14px; letter-spacing: 0.025em; text-decoration: none; border-radius: 0; transition: background 0.2s; } .ds-btn-primary:hover { background: #B0522E; } .ds-btn-primary:focus-visible { outline: 2px solid #B0522E; outline-offset: 3px; }"
+    },
+    {
+      "name": "Stamp Label",
+      "kind": "chip",
+      "description": "The typewriter voice: uppercase, letterspaced, rust for official marks.",
+      "html": "<span class=\"ds-stamp\">Postcards from the road</span>",
+      "css": ".ds-stamp { font-family: 'Special Elite', 'Courier New', monospace; font-size: 13px; text-transform: uppercase; letter-spacing: 0.18em; color: #B0522E; }"
+    },
+    {
+      "name": "Postcard",
+      "kind": "card",
+      "refersTo": "postcard",
+      "description": "The signature artifact: white mat, tilted rest, typewriter caption in the bottom lip.",
+      "html": "<figure class=\"ds-postcard\"><div class=\"ds-postcard-photo\"></div><figcaption class=\"ds-postcard-caption\">Valletta, Malta</figcaption></figure>",
+      "css": ".ds-postcard { width: 220px; margin: 0; background: #FFFFFF; padding: 12px 12px 32px; box-shadow: 0 12px 28px rgba(46,38,32,0.18); transform: rotate(-1.5deg); border-radius: 0; transition: transform 0.3s, box-shadow 0.3s; } .ds-postcard:hover { transform: rotate(-0.75deg) scale(1.02); box-shadow: 0 30px 50px rgba(46,38,32,0.3); } .ds-postcard-photo { aspect-ratio: 4 / 5; background: #E6D9C0; } .ds-postcard-caption { margin-top: 12px; text-align: center; font-family: 'Special Elite', 'Courier New', monospace; font-size: 13px; letter-spacing: 0.02em; color: #2E2620; }"
+    },
+    {
+      "name": "Darkroom Print",
+      "kind": "custom",
+      "description": "A print on cream mat against darkroom black, with shoot caption and safelight frame number.",
+      "html": "<figure class=\"ds-print\"><div class=\"ds-print-mat\"><div class=\"ds-print-photo\"></div></div><figcaption class=\"ds-print-caption\"><span>Oleta — Nikki</span><span class=\"ds-print-fr\">FR 082</span></figcaption></figure>",
+      "css": ".ds-print { width: 220px; margin: 0; padding: 16px; background: #191410; } .ds-print-mat { background: #FBF6EC; padding: 8px; box-shadow: 0 16px 40px rgba(0,0,0,0.5); } .ds-print-photo { aspect-ratio: 2 / 3; background: #5C5245; } .ds-print-caption { margin-top: 8px; display: flex; justify-content: space-between; font-family: 'Special Elite', 'Courier New', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.18em; color: rgba(241,232,214,0.7); } .ds-print-fr { color: rgba(229,48,31,0.8); }"
+    },
+    {
+      "name": "Back to Top",
+      "kind": "button",
+      "refersTo": "button-backtotop",
+      "description": "48px paper circle with a drawn arrow; inverts to ink on hover.",
+      "html": "<button class=\"ds-top\" aria-label=\"Back to top\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M8 13V3M3.5 7.5 8 3l4.5 4.5\"/></svg></button>",
+      "css": ".ds-top { display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 9999px; border: 2px solid #2E2620; background: #F1E8D6; color: #2E2620; box-shadow: 0 12px 28px rgba(46,38,32,0.18); cursor: pointer; transition: background 0.2s, color 0.2s; } .ds-top:hover { background: #2E2620; color: #F1E8D6; } .ds-top:focus-visible { outline: 2px solid #B0522E; outline-offset: 3px; }"
+    },
+    {
+      "name": "Nav Link",
+      "kind": "nav",
+      "description": "Typewriter uppercase link; rust on hover.",
+      "html": "<nav class=\"ds-nav\"><a href=\"#\" class=\"ds-nav-link\">Work</a><a href=\"#\" class=\"ds-nav-link\">Darkroom</a><a href=\"#\" class=\"ds-nav-link\">About</a><a href=\"#\" class=\"ds-nav-link\">Contact</a></nav>",
+      "css": ".ds-nav { display: flex; gap: 36px; } .ds-nav-link { font-family: 'Special Elite', 'Courier New', monospace; font-size: 12px; text-transform: uppercase; letter-spacing: 0.14em; color: #2E2620; text-decoration: none; transition: color 0.2s; } .ds-nav-link:hover { color: #B0522E; }"
+    },
+    {
+      "name": "The Postmark",
+      "kind": "custom",
+      "description": "Hand-drawn cancellation mark: double ring plus wavy killer bars, rust, tilted -6°.",
+      "html": "<svg class=\"ds-postmark\" viewBox=\"0 0 118 44\" width=\"180\"><g fill=\"none\" stroke=\"#B0522E\"><circle cx=\"22\" cy=\"22\" r=\"20.5\" stroke-width=\"1.4\"/><circle cx=\"22\" cy=\"22\" r=\"16\" stroke-width=\"0.7\" opacity=\"0.8\"/></g><g fill=\"#B0522E\" font-family=\"'Special Elite', monospace\" text-anchor=\"middle\"><text x=\"22\" y=\"17.5\" font-size=\"5.4\" letter-spacing=\"0.6\">MIAMI, FLA</text><text x=\"22\" y=\"25\" font-size=\"4.6\" letter-spacing=\"1.4\">PAR AVION</text><text x=\"22\" y=\"32.5\" font-size=\"4.6\" letter-spacing=\"0.6\">USA</text></g><g fill=\"none\" stroke=\"#B0522E\" stroke-width=\"1.3\" stroke-linecap=\"round\" opacity=\"0.85\"><path d=\"M50 13 c5 -3.5 9 3.5 14 0 s9 3.5 14 0 s9 3.5 14 0 s9 3.5 14 0\"/><path d=\"M50 22 c5 -3.5 9 3.5 14 0 s9 3.5 14 0 s9 3.5 14 0 s9 3.5 14 0\"/><path d=\"M50 31 c5 -3.5 9 3.5 14 0 s9 3.5 14 0 s9 3.5 14 0 s9 3.5 14 0\"/></g></svg>",
+      "css": ".ds-postmark { transform: rotate(-6deg); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Sun Journal",
+    "overview": "The site is a photographer's travel journal kept in Miami light: a desk of handled postcards, a wall of prints developed on the road, everything resting on warm, sun-bleached paper. Nothing on screen is \"UI chrome\" if it can be a physical artifact instead — headings are set like letterpress, labels are struck with a typewriter, accents are rubber-stamped in postmark rust, and photographs arrive as paper objects with weight, tilt, and shadow. The interface recedes; the archive is the argument. Interactive elements lean playful scrapbook: things tilt at imperfect angles, lift when grabbed, land with spring physics, and carry marks of handling. The one deliberate inversion is The Darkroom: a single near-black room inside the paper world where prints develop under a safelight red.",
+    "keyCharacteristics": [
+      "Warm paper surfaces; color temperature never goes cool",
+      "Photography presented as physical prints and postcards, never as bare rectangles",
+      "Typewriter labels (uppercase, letterspaced) as the system's official \"stamp\" voice",
+      "Imperfect rotation (±1.5–6°) on every paper artifact",
+      "One dark section (The Darkroom) as the counterweight to an otherwise cream site"
+    ],
+    "rules": [
+      { "name": "The Postmark Rule", "body": "Rust is stamped, not painted: it appears on ≤10% of any screen, always on small marks (labels, numbers, hovers, rings) and never as a background fill.", "section": "colors" },
+      { "name": "The One Dark Room Rule", "body": "Darkroom Black and Safelight Red exist only inside #darkroom. Every other surface lives on paper.", "section": "colors" },
+      { "name": "The Three Voices Rule", "body": "Serif speaks, typewriter stamps, sans explains. Never a fourth face; never one voice doing another's job (no serif captions, no typewriter paragraphs).", "section": "typography" },
+      { "name": "The Paper Casts, Chrome Doesn't Rule", "body": "If it isn't paper, it doesn't get a shadow. Sections divide with 2px ink rules, not elevation.", "section": "elevation" },
+      { "name": "The No-Radius Rule", "body": "Never rounded-md softening. A corner is sharp (0px) or a perfect circle (9999px); nothing in between.", "section": "shapes" }
+    ],
+    "dos": [
+      "Do put every photograph on paper — a white or cream mat with a caption — never a borderless image block.",
+      "Do tilt paper artifacts (±1.5–6°) and let interactions use spring physics (stiffness 120–260, damping 16–26); lean playful — stamps, marks, handwriting are welcome.",
+      "Do keep the stamp voice uppercase and letterspaced (≥0.14em) for every label, and rust for official marks.",
+      "Do theme browser surfaces: rust ::selection, rust :focus-visible (2px, 3px offset).",
+      "Do guard flex columns with min-w-0 and give masonry real flex columns with balanced heights."
+    ],
+    "donts": [
+      "Don't use pure black, cool grays, or pure white anywhere except postcard fronts (#FFFFFF) — every neutral is warm.",
+      "Don't round a corner (except perfect circles) or put a shadow on anything that isn't paper.",
+      "Don't let rust exceed small-mark duty or leak safelight red outside the darkroom.",
+      "Don't add a fourth typeface, gradient text, or icon fonts — icons are hand-drawn SVG strokes like the postmark.",
+      "Don't fabricate captions, clients, or notes; every name traces to the real archive (see PRODUCT.md)."
+    ]
+  }
+}
