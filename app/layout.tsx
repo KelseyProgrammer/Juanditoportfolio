@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { Homemade_Apple, Special_Elite, Work_Sans } from "next/font/google";
+import { Rock_Salt, Special_Elite, Work_Sans } from "next/font/google";
 import "./globals.css";
 
-const display = Homemade_Apple({
+const display = Rock_Salt({
   subsets: ["latin"],
   weight: "400",
   variable: "--font-display"

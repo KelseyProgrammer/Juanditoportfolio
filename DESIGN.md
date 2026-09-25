@@ -14,10 +14,10 @@ colors:
   safelight: "#E5301F"
 typography:
   display:
-    fontFamily: "Homemade Apple, cursive"
-    fontSize: "clamp(1.875rem, 4vw, 3rem)"
+    fontFamily: "Rock Salt, cursive"
+    fontSize: "clamp(1.5rem, 3vw, 2.25rem)"
     fontWeight: 400
-    lineHeight: 1.5
+    lineHeight: 1.7
   stamp:
     fontFamily: "Special Elite, Courier New, monospace"
     fontSize: "0.6875rem"
@@ -67,9 +67,9 @@ components:
 The site is a photographer's travel journal kept in Miami light: a desk of handled
 postcards, a wall of prints developed on the road, everything resting on warm,
 sun-bleached paper. Nothing on screen is "UI chrome" if it can be a physical
-artifact instead — headings are handwritten in pen, labels are struck with a
-typewriter, accents are rubber-stamped in postmark rust, and photographs arrive
-as paper objects with weight, tilt, and shadow. The interface recedes; the
+artifact instead — headings are hand-lettered in rough brush caps, labels are
+struck with a typewriter, accents are rubber-stamped in postmark rust, and
+photographs arrive as paper objects with weight, tilt, and shadow. The interface recedes; the
 archive is the argument.
 
 Interactive elements lean **playful scrapbook**: things tilt at imperfect
@@ -115,14 +115,14 @@ A sun-warmed paper palette struck with rubber-stamp rust, inverting once into da
 
 ## Typography
 
-**Display Font:** Homemade Apple (with cursive fallback; single 400 weight)
+**Display Font:** Rock Salt (with cursive fallback; single 400 weight)
 **Body Font:** Work Sans (with system-ui, sans-serif)
 **Label/Mono Font:** Special Elite (with Courier New, monospace)
 
-**Character:** A gritty vintage ink hand that does the talking, a typewriter that does the labeling, and a quiet workhorse sans that explains. Homemade Apple's irregular baseline and shaky strokes make every heading and postcard note read as writing on an old letter; it is wide with tall ascenders, so display sizes stay moderate (≤3rem) with generous 1.5 leading. Special Elite brings the analog, hand-struck texture that makes labels feel stamped rather than typeset.
+**Character:** Rough hand-lettered brush caps do the talking — dry, gritty stroke edges that read as faded marker on paper, but stay fully legible — a typewriter does the labeling, and a quiet workhorse sans explains. Rock Salt runs wide and caps-only in feel, so display sizes stay moderate (≤2.25rem) with generous 1.7 leading. Special Elite brings the analog, hand-struck texture that makes labels feel stamped rather than typeset.
 
 ### Hierarchy
-- **Display** (400, clamp ~1.875rem→3rem, line-height 1.5): Hero headline and section-scale statements. Generous leading for the hand's ascenders; hard line breaks only ≥640px.
+- **Display** (400, clamp ~1.5rem→2.25rem, line-height 1.7): Hero headline and section-scale statements. Generous leading for the rough caps; hard line breaks only ≥640px.
 - **Headline** (400, 1.875–3rem, snug): Section titles ("The Desk", "The Darkroom") and postcard-back notes.
 - **Stamp** (400, 11–13px, letter-spacing 0.14–0.2em, UPPERCASE): Nav links, eyebrows, captions, frame numbers, hints. Always uppercase, always letterspaced, almost always rust or faded.
 - **Body** (400, 16px, line-height 1.625): Bios and supporting prose, max-width ~36rem.

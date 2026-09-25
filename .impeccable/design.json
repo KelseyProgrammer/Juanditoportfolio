@@ -54,7 +54,7 @@
       }
     },
     "typographyMeta": {
-      "display": { "displayName": "Display Hand", "purpose": "Hero and section headlines; postcard-back notes. Gritty vintage ink handwriting (Homemade Apple); moderate sizes with 1.5 leading." },
+      "display": { "displayName": "Display Hand", "purpose": "Hero and section headlines; postcard-back notes. Rough brush-lettered caps (Rock Salt) — faded marker grit, fully legible; moderate sizes with 1.7 leading." },
       "stamp": { "displayName": "Typewriter Stamp", "purpose": "All labels: nav, eyebrows, captions, frame numbers. Always uppercase and letterspaced." },
       "body": { "displayName": "Body Sans", "purpose": "Bios and supporting prose only." }
     },
@@ -130,7 +130,7 @@
   ],
   "narrative": {
     "northStar": "The Sun Journal",
-    "overview": "The site is a photographer's travel journal kept in Miami light: a desk of handled postcards, a wall of prints developed on the road, everything resting on warm, sun-bleached paper. Nothing on screen is \"UI chrome\" if it can be a physical artifact instead — headings are handwritten in pen, labels are struck with a typewriter, accents are rubber-stamped in postmark rust, and photographs arrive as paper objects with weight, tilt, and shadow. The interface recedes; the archive is the argument. Interactive elements lean playful scrapbook: things tilt at imperfect angles, lift when grabbed, land with spring physics, and carry marks of handling. The one deliberate inversion is The Darkroom: a single near-black room inside the paper world where prints develop under a safelight red.",
+    "overview": "The site is a photographer's travel journal kept in Miami light: a desk of handled postcards, a wall of prints developed on the road, everything resting on warm, sun-bleached paper. Nothing on screen is \"UI chrome\" if it can be a physical artifact instead — headings are hand-lettered in rough brush caps, labels are struck with a typewriter, accents are rubber-stamped in postmark rust, and photographs arrive as paper objects with weight, tilt, and shadow. The interface recedes; the archive is the argument. Interactive elements lean playful scrapbook: things tilt at imperfect angles, lift when grabbed, land with spring physics, and carry marks of handling. The one deliberate inversion is The Darkroom: a single near-black room inside the paper world where prints develop under a safelight red.",
     "keyCharacteristics": [
       "Warm paper surfaces; color temperature never goes cool",
       "Photography presented as physical prints and postcards, never as bare rectangles",

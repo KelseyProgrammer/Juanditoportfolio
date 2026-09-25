@@ -69,7 +69,7 @@ export default function Postcard({ photo, className = "" }: Props) {
           <div className="flex h-full flex-col justify-between">
             <div>
               <div className="font-stamp text-[11px] uppercase tracking-[0.2em] text-rust">Post Card</div>
-              <p className="mt-4 font-display text-2xl leading-snug text-ink">{photo.note ?? "[Note from the shoot]"}</p>
+              <p className="mt-4 font-display text-lg leading-relaxed text-ink">{photo.note ?? "[Note from the shoot]"}</p>
             </div>
             <div className="flex items-end justify-between border-t border-ink/20 pt-4">
               <div className="font-stamp text-xs text-inkfaint">{photo.caption}</div>

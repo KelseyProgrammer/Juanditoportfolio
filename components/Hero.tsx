@@ -37,7 +37,7 @@ export default function Hero() {
             Postcards from the road
           </p>
         </div>
-        <h1 className="font-display text-3xl leading-[1.6] sm:text-4xl sm:leading-[1.55] md:text-5xl md:leading-[1.5]">
+        <h1 className="font-display text-2xl leading-[1.8] sm:text-3xl sm:leading-[1.75] md:text-4xl md:leading-[1.7]">
           A photo journal,{" "}
           <br className="hidden sm:inline" />
           mailed from{" "}
