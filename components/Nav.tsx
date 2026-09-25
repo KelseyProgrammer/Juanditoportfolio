@@ -4,6 +4,7 @@ export default function Nav() {
       <a href="#" className="font-display text-2xl">Juandito</a>
       <nav className="flex gap-6 font-stamp text-xs uppercase tracking-[0.14em] md:gap-9">
         <a href="#wall" className="hover:text-rust">Work</a>
+        <a href="#darkroom" className="hover:text-rust">Darkroom</a>
         <a href="#about" className="hover:text-rust">About</a>
         <a href="#contact" className="hover:text-rust">Contact</a>
       </nav>
