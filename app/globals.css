@@ -30,6 +30,12 @@ body {
   outline-offset: 3px;
 }
 
+/* Inside the darkroom the rust outline nearly vanishes on Darkroom Black;
+   the safelight is the section's sanctioned accent and reads clearly. */
+#darkroom :focus-visible {
+  outline-color: #E5301F;
+}
+
 /* Darkroom develop: runs once per print as a compositor-friendly CSS
    animation. Ending on `filter: none` releases the GPU layer the filter
    would otherwise pin for every print on the page. */
@@ -57,4 +63,28 @@ body {
 @keyframes safelight-off {
   from { opacity: 0.45; }
   to { opacity: 0; }
+}
+
+/* Film-strip sprocket holes: square perforations punched along the film
+   edge (sharp corners — the design system allows 0px radius or a perfect
+   circle, nothing between). Scrolls with the strip. */
+.sprockets {
+  height: 16px;
+  background-image: repeating-linear-gradient(
+    to right,
+    transparent 0 5px,
+    rgba(241, 232, 214, 0.16) 5px 13px,
+    transparent 13px 18px
+  );
+  background-size: 100% 8px;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* Hide the strip rail's scrollbar without disabling scrolling. */
+.rail-scroll {
+  scrollbar-width: none;
+}
+.rail-scroll::-webkit-scrollbar {
+  display: none;
 }

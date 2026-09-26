@@ -4,12 +4,15 @@ import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion, useInView, useReducedMotion } from "framer-motion";
 import { gallery, selects, type GalleryPhoto } from "@/lib/photos";
+import { seriesList, seriesBySlug } from "@/lib/series";
+import FilmStrip from "@/components/FilmStrip";
 
 /**
- * The Darkroom — every frame in the archive, in two modes:
+ * The Darkroom — the archive as shoots, in two modes:
  *
- * Prints (default): matted prints developed on entry — each arrives as a
- * washed, blurred negative under a red safelight and pours into color.
+ * Series (default): one matted hero print per series, developed on entry —
+ * each arrives as a washed, blurred negative under a red safelight and
+ * pours into color. Clicking a hero opens that series as a film strip.
  *
  * Contact sheet: the working view. A dense uniform grid of all frames,
  * selects circled in grease pencil, any frame opening full-size in a
@@ -30,49 +33,78 @@ import { gallery, selects, type GalleryPhoto } from "@/lib/photos";
  *   developed and the sheet never re-renders from scratch.
  */
 
-function DarkroomPrint({ photo, index }: { photo: GalleryPhoto; index: number }) {
+type DarkroomPrintProps = {
+  photo: GalleryPhoto;
+  labelLeft: string;
+  labelRight: string;
+  onClick?: () => void;
+  ariaLabel?: string;
+  buttonRef?: (el: HTMLButtonElement | null) => void;
+  layoutId?: string; // shared with the film strip's mat for the portal morph
+};
+
+function DarkroomPrint({ photo, labelLeft, labelRight, onClick, ariaLabel, buttonRef, layoutId }: DarkroomPrintProps) {
   const ref = useRef<HTMLElement>(null);
   const inView = useInView(ref, { once: true, amount: "some" });
   const reduceMotion = useReducedMotion();
   const [done, setDone] = useState(false);
 
   const animating = !reduceMotion && !done;
-  const frame = String(index + 1).padStart(3, "0");
+
+  const mat = (
+    <motion.div
+      layoutId={layoutId}
+      transition={{ type: "spring", stiffness: 300, damping: 28 }}
+      className="bg-[#FBF6EC] p-2 pb-2 shadow-[0_16px_40px_rgba(0,0,0,0.5)]"
+    >
+      <div
+        className={`relative overflow-hidden bg-black ${
+          animating ? (inView ? "print-develop" : "print-negative") : ""
+        }`}
+        onAnimationEnd={() => setDone(true)}
+      >
+        <Image
+          src={photo.src}
+          alt={photo.alt}
+          width={photo.w}
+          height={photo.h}
+          sizes="(max-width: 640px) 92vw, (max-width: 1280px) 46vw, 30vw"
+          draggable={false}
+          className="block h-auto w-full"
+        />
+        {animating && (
+          <div
+            aria-hidden
+            className={`pointer-events-none absolute inset-0 bg-[#E5301F] mix-blend-multiply ${
+              inView ? "safelight-off" : "opacity-45"
+            }`}
+          />
+        )}
+      </div>
+    </motion.div>
+  );
 
   return (
     <figure
       ref={ref}
       style={{ contentVisibility: "auto", containIntrinsicSize: "auto 520px" }}
     >
-      <div className="bg-[#FBF6EC] p-2 pb-2 shadow-[0_16px_40px_rgba(0,0,0,0.5)]">
-        <div
-          className={`relative overflow-hidden bg-black ${
-            animating ? (inView ? "print-develop" : "print-negative") : ""
-          }`}
-          onAnimationEnd={() => setDone(true)}
+      {onClick ? (
+        <button
+          type="button"
+          onClick={onClick}
+          aria-label={ariaLabel}
+          ref={buttonRef}
+          className="block w-full cursor-pointer"
         >
-          <Image
-            src={photo.src}
-            alt={photo.alt}
-            width={photo.w}
-            height={photo.h}
-            sizes="(max-width: 640px) 92vw, (max-width: 1280px) 46vw, 30vw"
-            draggable={false}
-            className="block h-auto w-full"
-          />
-          {animating && (
-            <div
-              aria-hidden
-              className={`pointer-events-none absolute inset-0 bg-[#E5301F] mix-blend-multiply ${
-                inView ? "safelight-off" : "opacity-45"
-              }`}
-            />
-          )}
-        </div>
-      </div>
+          {mat}
+        </button>
+      ) : (
+        mat
+      )}
       <figcaption className="mt-2 flex items-baseline justify-between font-stamp text-[11px] uppercase tracking-[0.18em]">
-        <span className="text-[#F1E8D6]/70">{photo.caption}</span>
-        <span className="text-[#E5301F]/80">FR {frame}</span>
+        <span className="text-[#F1E8D6]/70">{labelLeft}</span>
+        <span className="text-[#E5301F]/80">{labelRight}</span>
       </figcaption>
     </figure>
   );
@@ -117,9 +149,84 @@ const selectSet = new Set(selects);
 
 export default function Darkroom() {
   const [cols, setCols] = useState(3);
-  const [mode, setMode] = useState<"prints" | "sheet">("prints");
+  const [mode, setMode] = useState<"series" | "sheet">("series");
   const [sheetMounted, setSheetMounted] = useState(false);
   const [openIdx, setOpenIdx] = useState<number | null>(null);
+  const [openSlug, setOpenSlug] = useState<string | null>(null);
+  const reduceMotion = useReducedMotion();
+  // Direct-link opens skip the portal morph: an offscreen hero under
+  // content-visibility has no valid rect to morph from.
+  const viaClickRef = useRef(false);
+  const heroButtonRefs = useRef(new Map<string, HTMLButtonElement>());
+  const prevSlugRef = useRef<string | null>(null);
+
+  // Remember the open series so focus can return to its hero after the
+  // overlay finishes exiting (focusing earlier loses to the router's own
+  // popstate work).
+  useEffect(() => {
+    if (openSlug !== null) prevSlugRef.current = openSlug;
+  }, [openSlug]);
+
+  const restoreFocus = () => {
+    if (prevSlugRef.current) {
+      heroButtonRefs.current.get(prevSlugRef.current)?.focus();
+    }
+  };
+
+  // Whether WE pushed the ?series= entry — decides close via history.back()
+  // (click-opens) vs replaceState (direct links, where back() would exit
+  // the site).
+  const pushedRef = useRef(false);
+
+  // Opening always lands on the series grid: the portal transition needs a
+  // visible grid hero to morph back into on close.
+  const openSeries = (slug: string) => {
+    history.pushState({ series: slug }, "", `?series=${slug}`);
+    pushedRef.current = true;
+    viaClickRef.current = true;
+    setMode("series");
+    setOpenSlug(slug);
+  };
+
+  const closeStrip = () => {
+    if (pushedRef.current) {
+      pushedRef.current = false;
+      history.back(); // the popstate handler clears openSlug
+    } else {
+      history.replaceState(null, "", window.location.pathname + window.location.hash);
+      setOpenSlug(null);
+    }
+  };
+
+  // Direct link: /?series=zan opens that strip on arrival (plain fade — the
+  // source hero is offscreen, so there is no rect to morph from). The page
+  // is snapped to the darkroom underneath so closing lands somewhere sane.
+  useEffect(() => {
+    const slug = new URLSearchParams(window.location.search).get("series");
+    if (slug && seriesBySlug.has(slug)) {
+      viaClickRef.current = false;
+      setMode("series");
+      setOpenSlug(slug);
+      document.getElementById("darkroom")?.scrollIntoView({ behavior: "instant" });
+    }
+  }, []);
+
+  // Back/forward buttons open and close the strip to match the URL.
+  useEffect(() => {
+    const onPop = () => {
+      const slug = new URLSearchParams(window.location.search).get("series");
+      pushedRef.current = false;
+      viaClickRef.current = false;
+      if (slug && seriesBySlug.has(slug)) {
+        setMode("series");
+        setOpenSlug(slug);
+      } else {
+        setOpenSlug(null);
+      }
+    };
+    window.addEventListener("popstate", onPop);
+    return () => window.removeEventListener("popstate", onPop);
+  }, []);
 
   useEffect(() => {
     const queries = [
@@ -150,11 +257,14 @@ export default function Darkroom() {
   }, [openIdx]);
 
   const showSheet = (on: boolean) => {
-    setMode(on ? "sheet" : "prints");
+    setMode(on ? "sheet" : "series");
     if (on) setSheetMounted(true);
   };
 
-  const columns = useMemo(() => distribute(gallery, cols), [cols]);
+  const columns = useMemo(
+    () => distribute(seriesList.map((s) => s.hero.photo), cols),
+    [cols]
+  );
   const open = openIdx === null ? null : gallery[openIdx];
 
   const toggleBase =
@@ -166,22 +276,22 @@ export default function Darkroom() {
         <h2 className="font-display text-3xl text-[#F1E8D6]/75 md:text-4xl">The Darkroom</h2>
         <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
           <p className="font-stamp text-xs uppercase tracking-widest text-[#E5301F]">
-            {mode === "prints"
-              ? `Scroll to develop · ${gallery.length} frames`
+            {mode === "series"
+              ? `Scroll to develop · ${seriesList.length} series / ${gallery.length} frames`
               : "Selects circled · tap any frame"}
           </p>
           <div className="flex border border-[#F1E8D6]/30">
             <button
               type="button"
-              aria-pressed={mode === "prints"}
+              aria-pressed={mode === "series"}
               onClick={() => showSheet(false)}
               className={`${toggleBase} ${
-                mode === "prints"
+                mode === "series"
                   ? "bg-[#F1E8D6] text-[#191410]"
                   : "text-[#F1E8D6]/60 hover:text-[#F1E8D6]"
               }`}
             >
-              Prints
+              Series
             </button>
             <button
               type="button"
@@ -199,13 +309,29 @@ export default function Darkroom() {
         </div>
       </div>
 
-      {/* Prints — the developing masonry */}
-      <div className={mode === "prints" ? "flex gap-5 md:gap-7" : "hidden"}>
+      {/* Series — one developing hero print per shoot */}
+      <div className={mode === "series" ? "flex gap-5 md:gap-7" : "hidden"}>
         {columns.map((column, c) => (
           <div key={c} className="flex min-w-0 flex-1 flex-col gap-5 md:gap-7">
-            {column.map(({ photo, index }) => (
-              <DarkroomPrint key={photo.src} photo={photo} index={index} />
-            ))}
+            {column.map(({ photo, index }) => {
+              const series = seriesList[index];
+              const count = series.frames.length;
+              return (
+                <DarkroomPrint
+                  key={series.slug}
+                  photo={photo}
+                  labelLeft={series.title}
+                  labelRight={`${count} ${count === 1 ? "frame" : "frames"}`}
+                  ariaLabel={`Open series ${series.title} — ${count} ${count === 1 ? "frame" : "frames"}`}
+                  onClick={() => openSeries(series.slug)}
+                  layoutId={reduceMotion ? undefined : `portal-${series.slug}`}
+                  buttonRef={(el) => {
+                    if (el) heroButtonRefs.current.set(series.slug, el);
+                    else heroButtonRefs.current.delete(series.slug);
+                  }}
+                />
+              );
+            })}
           </div>
         ))}
       </div>
@@ -246,6 +372,22 @@ export default function Darkroom() {
           ))}
         </div>
       )}
+
+      {/* Film strip — an open series */}
+      <AnimatePresence onExitComplete={restoreFocus}>
+        {openSlug && seriesBySlug.has(openSlug) && (
+          <FilmStrip
+            key={openSlug}
+            series={seriesBySlug.get(openSlug)!}
+            layoutId={
+              !reduceMotion && viaClickRef.current
+                ? `portal-${openSlug}`
+                : undefined
+            }
+            onClose={closeStrip}
+          />
+        )}
+      </AnimatePresence>
 
       {/* Lightbox */}
       <AnimatePresence>
