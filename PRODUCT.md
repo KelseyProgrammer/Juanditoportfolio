@@ -28,7 +28,7 @@ Miami-based light with travel range: a photographer rooted in Miami's warm, sun-
 
 - 169-frame photo archive across named shoots (portrait, fashion campaign, swim/lifestyle, travel journal), web-optimized at 1800px.
 - The Darkroom offers a contact-sheet mode — a dense grid with the selects circled — built for art directors who scan archives that way.
-- Booking channels: Juanherrep@yahoo.com and Instagram @juanditobandito.
+- Booking channels: Juanditobandito88@gmail.com and Instagram @juanditobandito.
 - Hero tagline ("Real light, warm color, nothing over-produced.") and the About bio were drafted by the agent from the archive and confirmed positioning — no invented biography (no years-active or origin claims). The user may replace them with personal specifics.
 - **Undecided / pending from the user:** the darkroom "Journal · <date>" captions, which are derived from file dates rather than confirmed shoot names.
 
