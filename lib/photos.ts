@@ -55,6 +55,16 @@ export const photos: Photo[] = [
   { id: "oleta", src: "/photos/oletanikki-016-copy.jpg", alt: "Nikki at Oleta River", caption: "Oleta — Nikki", note: "Golden hour at the river. Eaten alive by mosquitoes.", rotate: 1.5 }
 ];
 
+// The photographer himself — the postcard in the contact footer.
+export const contactPhoto: Photo = {
+  id: "juandito",
+  src: "/photos/juandito.jpg",
+  alt: "Juandito in a BANDITO cap, reflected among string lights",
+  caption: "Juandito Bandito",
+  note: "The bandito himself. Wish you were here.",
+  rotate: 2
+};
+
 // The selects — frames featured on the Desk and in the hero pile.
 // These get the grease-pencil circle on the contact sheet.
 export const selects = Array.from(
