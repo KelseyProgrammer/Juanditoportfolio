@@ -15,6 +15,13 @@
 import fs from "node:fs";
 import path from "node:path";
 
+// Credentials come from the shell or from .env in the repo root (gitignored).
+try {
+  process.loadEnvFile(new URL("../.env", import.meta.url).pathname);
+} catch {
+  // no .env — fine, the shell may provide the vars
+}
+
 const API = "https://api.mux.com/video/v1";
 const { MUX_TOKEN_ID, MUX_TOKEN_SECRET } = process.env;
 
