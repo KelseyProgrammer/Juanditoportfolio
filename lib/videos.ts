@@ -26,6 +26,13 @@ export const videos: Video[] = [
   // { playbackId: "abc123", series: "zan", alt: "Zan — behind the scenes", w: 16, h: 9, duration: 47 },
 ];
 
+/**
+ * Mux environment key — public, enables playback analytics (Mux Data).
+ * This is NOT the API access token; ingestion needs MUX_TOKEN_ID +
+ * MUX_TOKEN_SECRET in the shell (never committed).
+ */
+export const MUX_ENV_KEY = "3rclipmvit6nptb9shbp02en7";
+
 /** Poster frame served straight from Mux (no upload needed). */
 export const muxPoster = (playbackId: string, width = 1200) =>
   `https://image.mux.com/${playbackId}/thumbnail.jpg?width=${width}`;

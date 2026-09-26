@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
 import { motion, useAnimationControls, useReducedMotion } from "framer-motion";
 import type { Series, SeriesFrame } from "@/lib/series";
-import { formatDuration, muxPoster } from "@/lib/videos";
+import { formatDuration, muxPoster, MUX_ENV_KEY } from "@/lib/videos";
 
 // Loaded only when a video frame is actually shown — keeps the Mux player
 // chunk out of the page bundle while the archive is stills-only.
@@ -213,6 +213,8 @@ export default function FilmStrip({ series, onClose, layoutId }: FilmStripProps)
                   streamType="on-demand"
                   preload="none"
                   accentColor="#E5301F"
+                  envKey={MUX_ENV_KEY}
+                  metadata={{ video_title: frame.video.alt }}
                   style={{ height: "100%", width: "100%" }}
                 />
               )}
