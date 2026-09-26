@@ -41,6 +41,9 @@ export default function Postcard({ photo, className = "" }: Props) {
       aria-label={`${photo.caption}. Click to flip the postcard.`}
       aria-pressed={flipped}
       className={`group relative block w-full select-none text-left [perspective:1200px] ${className}`}
+      // Container query root: the back's type and stamp scale with the
+      // card's own width, so small desk cards on mobile never overflow.
+      style={{ containerType: "inline-size" }}
     >
       <motion.div
         className="relative w-full [transform-style:preserve-3d]"
@@ -65,15 +68,40 @@ export default function Postcard({ photo, className = "" }: Props) {
         </div>
 
         {/* BACK */}
-        <div className="absolute inset-0 bg-[#FBF6EC] p-6 shadow-postcard [backface-visibility:hidden] [transform:rotateY(180deg)]">
+        <div
+          className="absolute inset-0 overflow-hidden bg-[#FBF6EC] shadow-postcard [backface-visibility:hidden] [transform:rotateY(180deg)]"
+          style={{ padding: "clamp(10px, 7cqw, 24px)" }}
+        >
           <div className="flex h-full flex-col justify-between">
             <div>
-              <div className="font-stamp text-[11px] uppercase tracking-[0.2em] text-rust">Post Card</div>
-              <p className="mt-4 font-display text-lg leading-relaxed text-ink">{photo.note ?? "[Note from the shoot]"}</p>
+              <div
+                className="font-stamp uppercase tracking-[0.2em] text-rust"
+                style={{ fontSize: "clamp(8px, 4cqw, 11px)" }}
+              >
+                Post Card
+              </div>
+              <p
+                className="font-display text-ink"
+                style={{
+                  fontSize: "clamp(11px, 7cqw, 18px)",
+                  lineHeight: 1.5,
+                  marginTop: "clamp(6px, 4cqw, 16px)"
+                }}
+              >
+                {photo.note ?? "[Note from the shoot]"}
+              </p>
             </div>
-            <div className="flex items-end justify-between border-t border-ink/20 pt-4">
-              <div className="font-stamp text-xs text-inkfaint">{photo.caption}</div>
-              <div className="h-14 w-12 border border-dashed border-ink/40 p-1">
+            <div
+              className="flex items-end justify-between border-t border-ink/20"
+              style={{ paddingTop: "clamp(6px, 3.5cqw, 16px)" }}
+            >
+              <div className="font-stamp text-inkfaint" style={{ fontSize: "clamp(8px, 4.5cqw, 12px)" }}>
+                {photo.caption}
+              </div>
+              <div
+                className="shrink-0 border border-dashed border-ink/40 p-1"
+                style={{ width: "clamp(26px, 14cqw, 48px)", height: "clamp(30px, 17cqw, 56px)" }}
+              >
                 <LightningStamp />
               </div>
             </div>
