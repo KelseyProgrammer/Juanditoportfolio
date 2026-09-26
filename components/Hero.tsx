@@ -112,7 +112,8 @@ export default function Hero() {
           wherever the light is.
         </h1>
         <p className="max-w-md text-base leading-relaxed text-inkfaint">
-          Miami-based photographer working in editorial, portrait, and travel. [YOUR TAGLINE HERE — one line on your approach.]
+          Miami-based photographer working in editorial, portrait, and travel.
+          Real light, warm color, nothing over-produced.
         </p>
       </div>
 
