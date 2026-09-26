@@ -1,4 +1,5 @@
 import { gallery, type GalleryPhoto } from "@/lib/photos";
+import { videos, type Video } from "@/lib/videos";
 
 /**
  * Series — the Darkroom's shoots, derived from gallery captions.
@@ -43,16 +44,25 @@ export const SERIES: Record<string, SeriesMeta> = {
   "Journal · Sep 2026": { slug: "journal" },
 };
 
-export type SeriesFrame = {
+export type PhotoFrame = {
+  kind: "photo";
   photo: GalleryPhoto;
   globalIndex: number; // position in `gallery` — the source of FR numbers
 };
 
+export type VideoFrame = {
+  kind: "video";
+  video: Video;
+  videoIndex: number; // position in `videos` — the source of MOV numbers
+};
+
+export type SeriesFrame = PhotoFrame | VideoFrame;
+
 export type Series = {
   slug: string;
   title: string;
-  hero: SeriesFrame;
-  frames: SeriesFrame[]; // gallery order
+  hero: PhotoFrame;      // always a still — video heroes are deferred
+  frames: SeriesFrame[]; // gallery order, then the series' clips
   captions: string[];    // source captions folded into this series
 };
 
@@ -66,28 +76,42 @@ function slugify(caption: string): string {
 }
 
 function buildSeries(): Series[] {
-  const bySlug = new Map<string, { frames: SeriesFrame[]; captions: string[] }>();
+  const bySlug = new Map<string, { photos: PhotoFrame[]; captions: string[] }>();
 
   gallery.forEach((photo, globalIndex) => {
     const slug = SERIES[photo.caption]?.slug ?? slugify(photo.caption);
     let group = bySlug.get(slug);
     if (!group) {
-      group = { frames: [], captions: [] };
+      group = { photos: [], captions: [] };
       bySlug.set(slug, group);
     }
-    group.frames.push({ photo, globalIndex });
+    group.photos.push({ kind: "photo", photo, globalIndex });
     if (!group.captions.includes(photo.caption)) group.captions.push(photo.caption);
   });
 
-  return Array.from(bySlug.entries()).map(([slug, { frames, captions }]) => {
+  // Clips append to the end of their series' strip, in videos-array order.
+  const videosBySlug = new Map<string, VideoFrame[]>();
+  videos.forEach((video, videoIndex) => {
+    if (!bySlug.has(video.series)) {
+      if (process.env.NODE_ENV !== "production") {
+        console.warn(`[series] video "${video.playbackId}" names unknown series "${video.series}" — skipped`);
+      }
+      return;
+    }
+    const list = videosBySlug.get(video.series) ?? [];
+    list.push({ kind: "video", video, videoIndex });
+    videosBySlug.set(video.series, list);
+  });
+
+  return Array.from(bySlug.entries()).map(([slug, { photos, captions }]) => {
     const metas = captions
       .map((caption) => SERIES[caption])
       .filter((meta): meta is SeriesMeta => Boolean(meta));
 
     const heroSrc = metas.find((meta) => meta.hero)?.hero;
-    let hero = frames[0];
+    let hero = photos[0];
     if (heroSrc) {
-      const match = frames.find((frame) => frame.photo.src === heroSrc);
+      const match = photos.find((frame) => frame.photo.src === heroSrc);
       if (match) {
         hero = match;
       } else if (process.env.NODE_ENV !== "production") {
@@ -99,7 +123,7 @@ function buildSeries(): Series[] {
       slug,
       title: metas.find((meta) => meta.title)?.title ?? captions[0],
       hero,
-      frames,
+      frames: [...photos, ...(videosBySlug.get(slug) ?? [])],
       captions,
     };
   });

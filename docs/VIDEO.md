@@ -1,8 +1,44 @@
-# Video support — plan (not yet built)
+# Video support — built on Mux, waiting on footage
 
-The client will be sending video files. This is the agreed proposal for
-hosting them and fitting them into the site's film language. Pricing was
-verified against vendor pages in September 2026 — re-check before signing up.
+**Status: the site side is DONE.** Video frames render in the film strip
+(Mux player, posters, MOV labels, duration chips, preload="none"), and
+`scripts/mux-ingest.mjs` turns raw files into paste-ready data entries.
+The only missing pieces are a Mux account and the client's clips.
+
+## Go-live runbook (when the Dropbox arrives)
+
+1. **Once:** create a Mux account at mux.com (card required; usage at this
+   scale sits inside the free 100k delivery minutes + $20/mo PAYG credit).
+   Dashboard → Settings → Access Tokens → Generate new token
+   (environment: Production, permissions: Mux Video read + write).
+2. Ingest — either paste Dropbox share links or point at downloaded files:
+
+   ```bash
+   export MUX_TOKEN_ID=... MUX_TOKEN_SECRET=...
+   node scripts/mux-ingest.mjs --series=zan "https://www.dropbox.com/s/....mov?dl=0"
+   node scripts/mux-ingest.mjs --series=journal ~/Downloads/clips/*.mp4
+   ```
+
+   The script uploads (basic/free encoding, public playback), waits until
+   each asset is ready, and prints finished entries with the real aspect
+   ratio and duration.
+3. Paste the printed entries into `videos` in `lib/videos.ts`; set each
+   entry's `series` slug (see `lib/series.ts`) and write a real `alt`.
+4. `npm run build`, commit, push — Netlify deploys. Clips appear at the end
+   of their series' film strip as MOV frames.
+
+Design notes: clips play only on tap (`preload="none"`, poster from
+`image.mux.com` — no video bytes otherwise), controls are the Mux player
+with the safelight-red accent, and a video is never a series hero (stills
+carry the develop effect). A video-only series isn't supported yet — every
+clip attaches to an existing photo series.
+
+---
+
+## Original proposal (September 2026)
+
+The comparison that led to Mux. Pricing was verified against vendor pages
+in September 2026 — re-check before relying on it.
 
 Scale assumption: 5–20 clips, 15s–3min each, ~1–2 GB total, light traffic
 (a few hundred visitors/month).

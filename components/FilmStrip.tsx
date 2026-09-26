@@ -1,9 +1,15 @@
 "use client";
 
 import Image from "next/image";
+import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
 import { motion, useAnimationControls, useReducedMotion } from "framer-motion";
-import type { Series } from "@/lib/series";
+import type { Series, SeriesFrame } from "@/lib/series";
+import { formatDuration, muxPoster } from "@/lib/videos";
+
+// Loaded only when a video frame is actually shown — keeps the Mux player
+// chunk out of the page bundle while the archive is stills-only.
+const MuxPlayer = dynamic(() => import("@mux/mux-player-react"), { ssr: false });
 
 /**
  * FilmStrip — a series opened as a length of 35mm film.
@@ -12,7 +18,9 @@ import type { Series } from "@/lib/series";
  * below it as a strip with sprocket holes and edge numbers. FR numbers
  * stay global (the frame's position in the full gallery), matching the
  * contact sheet — a merged series reads as non-contiguous edge code,
- * like frames spliced from different rolls.
+ * like frames spliced from different rolls. Video clips ride at the end
+ * of the strip as MOV frames: poster in the rail, full player when
+ * active, no video bytes until play is pressed.
  */
 
 type FilmStripProps = {
@@ -24,6 +32,15 @@ type FilmStripProps = {
 };
 
 const fr = (globalIndex: number) => String(globalIndex + 1).padStart(3, "0");
+const frameKey = (f: SeriesFrame) =>
+  f.kind === "photo" ? f.photo.src : f.video.playbackId;
+const frameLabel = (f: SeriesFrame) =>
+  f.kind === "photo"
+    ? `FR ${fr(f.globalIndex)}`
+    : `MOV ${String(f.videoIndex + 1).padStart(2, "0")}`;
+const frameAlt = (f: SeriesFrame) => (f.kind === "photo" ? f.photo.alt : f.video.alt);
+/** Both kinds carry w/h for the aspect box. */
+const frameDims = (f: SeriesFrame) => (f.kind === "photo" ? f.photo : f.video);
 
 export default function FilmStrip({ series, onClose, layoutId }: FilmStripProps) {
   const reduceMotion = useReducedMotion();
@@ -68,6 +85,8 @@ export default function FilmStrip({ series, onClose, layoutId }: FilmStripProps)
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
+      // Inside the video player, arrow keys seek — don't advance the film.
+      if ((e.target as Element | null)?.closest?.("mux-player")) return;
       if (e.key === "ArrowRight") step(1);
       if (e.key === "ArrowLeft") step(-1);
     };
@@ -131,7 +150,7 @@ export default function FilmStrip({ series, onClose, layoutId }: FilmStripProps)
         <span role="status" className="shrink-0 text-[#E5301F]">
           {active + 1} / {series.frames.length}
           <span className="sr-only">
-            {` — frame ${active + 1} of ${series.frames.length}, FR ${fr(frame.globalIndex)}`}
+            {` — frame ${active + 1} of ${series.frames.length}, ${frameLabel(frame)}`}
           </span>
         </span>
         <button
@@ -156,11 +175,13 @@ export default function FilmStrip({ series, onClose, layoutId }: FilmStripProps)
               // the mat keeps its shape while the incoming frame is still
               // fetching instead of collapsing to a sliver.
               style={{
-                aspectRatio: `${frame.photo.w} / ${frame.photo.h}`,
-                height: `min(52vh, calc(86vw * ${(frame.photo.h / frame.photo.w).toFixed(4)}))`,
+                aspectRatio: `${frameDims(frame).w} / ${frameDims(frame).h}`,
+                height: `min(52vh, calc(86vw * ${(frameDims(frame).h / frameDims(frame).w).toFixed(4)}))`,
               }}
               animate={slide}
-              drag={count > 1 && !reduceMotion ? "x" : false}
+              // Dragging a video would fight the player's scrubber — swipe
+              // stays available via arrows and the rail.
+              drag={count > 1 && !reduceMotion && frame.kind === "photo" ? "x" : false}
               dragConstraints={{ left: 0, right: 0 }}
               dragElastic={0.2}
               onDragEnd={(_, info) => {
@@ -172,38 +193,59 @@ export default function FilmStrip({ series, onClose, layoutId }: FilmStripProps)
                 }
               }}
             >
-              <Image
-                key={frame.photo.src}
-                src={frame.photo.src}
-                alt={frame.photo.alt}
-                width={frame.photo.w}
-                height={frame.photo.h}
-                sizes="(max-width: 768px) 88vw, 60vw"
-                priority
-                draggable={false}
-                className="h-full w-full"
-              />
-            </motion.div>
-            {/* Preload the neighboring frames: a real (but invisible) layout
-                box is required — display:none or loading="lazy" would never
-                fetch them. */}
-            <div aria-hidden className="pointer-events-none absolute inset-2 overflow-hidden opacity-0">
-              {neighbors.map((n) => (
+              {frame.kind === "photo" ? (
                 <Image
-                  key={n.photo.src}
-                  src={n.photo.src}
-                  alt=""
-                  width={n.photo.w}
-                  height={n.photo.h}
-                  sizes="(max-width: 768px) 92vw, 70vw"
-                  className="absolute inset-0 h-full w-full object-contain"
+                  key={frame.photo.src}
+                  src={frame.photo.src}
+                  alt={frame.photo.alt}
+                  width={frame.photo.w}
+                  height={frame.photo.h}
+                  sizes="(max-width: 768px) 88vw, 60vw"
+                  priority
+                  draggable={false}
+                  className="h-full w-full"
                 />
-              ))}
+              ) : (
+                <MuxPlayer
+                  key={frame.video.playbackId}
+                  playbackId={frame.video.playbackId}
+                  poster={muxPoster(frame.video.playbackId)}
+                  streamType="on-demand"
+                  preload="none"
+                  accentColor="#E5301F"
+                  style={{ height: "100%", width: "100%" }}
+                />
+              )}
+            </motion.div>
+            {/* Preload the neighboring still frames: a real (but invisible)
+                layout box is required — display:none or loading="lazy" would
+                never fetch them. Videos load nothing until played. */}
+            <div aria-hidden className="pointer-events-none absolute inset-2 overflow-hidden opacity-0">
+              {neighbors.map((n) =>
+                n.kind === "photo" ? (
+                  <Image
+                    key={n.photo.src}
+                    src={n.photo.src}
+                    alt=""
+                    width={n.photo.w}
+                    height={n.photo.h}
+                    sizes="(max-width: 768px) 92vw, 70vw"
+                    className="absolute inset-0 h-full w-full object-contain"
+                  />
+                ) : null
+              )}
             </div>
           </motion.div>
           <figcaption className="mt-2 flex items-baseline justify-between gap-6 font-stamp text-[11px] uppercase tracking-[0.18em]">
-            <span className="text-[#F1E8D6]/70">{frame.photo.caption}</span>
-            <span className="text-[#E5301F]/80">FR {fr(frame.globalIndex)}</span>
+            <span className="text-[#F1E8D6]/70">
+              {frame.kind === "photo" ? frame.photo.caption : series.title}
+            </span>
+            <span className="text-[#E5301F]/80">
+              {frameLabel(frame)}
+              {frame.kind === "video" && (
+                <span className="ml-3 text-[#F1E8D6]/45">{formatDuration(frame.video.duration)}</span>
+              )}
+            </span>
           </figcaption>
         </figure>
       </div>
@@ -215,13 +257,13 @@ export default function FilmStrip({ series, onClose, layoutId }: FilmStripProps)
           <div className="flex gap-2 py-1">
             {series.frames.map((f, i) => (
               <button
-                key={f.photo.src}
+                key={frameKey(f)}
                 type="button"
                 ref={(el) => {
                   thumbRefs.current[i] = el;
                 }}
                 onClick={() => goTo(i, Math.sign(i - active))}
-                aria-label={`Frame ${fr(f.globalIndex)} — ${f.photo.alt}`}
+                aria-label={`${f.kind === "photo" ? "Frame" : "Clip"} ${frameLabel(f)} — ${frameAlt(f)}`}
                 aria-current={i === active}
                 className={`shrink-0 ${
                   i === active ? "outline outline-2 outline-[#E5301F]" : ""
@@ -229,7 +271,7 @@ export default function FilmStrip({ series, onClose, layoutId }: FilmStripProps)
               >
                 <span className="relative block h-16 w-24 overflow-hidden bg-black">
                   <Image
-                    src={f.photo.src}
+                    src={f.kind === "photo" ? f.photo.src : muxPoster(f.video.playbackId, 192)}
                     alt=""
                     fill
                     sizes="96px"
@@ -238,13 +280,18 @@ export default function FilmStrip({ series, onClose, layoutId }: FilmStripProps)
                       i === active ? "" : "opacity-60 hover:opacity-90"
                     }`}
                   />
+                  {f.kind === "video" && (
+                    <span className="absolute bottom-0.5 right-0.5 bg-[#191410]/80 px-1 font-stamp text-[8px] tracking-[0.08em] text-[#F1E8D6]/80">
+                      ▸ {formatDuration(f.video.duration)}
+                    </span>
+                  )}
                 </span>
                 <span
                   className={`block px-0.5 py-0.5 text-left font-stamp text-[9px] tracking-[0.12em] ${
                     i === active ? "text-[#E5301F]" : "text-[#F1E8D6]/45"
                   }`}
                 >
-                  {fr(f.globalIndex)}
+                  {f.kind === "photo" ? fr(f.globalIndex) : frameLabel(f)}
                 </span>
               </button>
             ))}
