@@ -15,16 +15,34 @@ export type GalleryPhoto = {
   h: number;          // intrinsic pixel height of the export
 };
 
-// The hero postcard — kept separate from the Desk so the same frame
-// never appears twice above the fold. Any gallery src works here.
-export const heroPhoto: Photo = {
-  id: "hero",
-  src: "/photos/annie-01.jpg",
-  alt: "Annie, editorial portrait",
-  caption: "Annie",
-  note: "First frame after the rain stopped.",
-  rotate: -3
-};
+// The hero mail pile — three postcards, kept separate from the Desk so no
+// frame appears twice above the fold. Click a back print to bring it forward.
+export const heroStack: Photo[] = [
+  {
+    id: "hero-annie",
+    src: "/photos/annie-01.jpg",
+    alt: "Annie, editorial portrait",
+    caption: "Annie",
+    note: "First frame after the rain stopped.",
+    rotate: -3
+  },
+  {
+    id: "hero-maile",
+    src: "/photos/maile0203.jpg",
+    alt: "Maile, editorial portrait",
+    caption: "Maile",
+    note: "Window light did most of the work.",
+    rotate: -11
+  },
+  {
+    id: "hero-corvette",
+    src: "/photos/photo-nov-06-2025-10-37-54-am.jpg",
+    alt: "Model with a pink Corvette, Miami",
+    caption: "Journal · Nov 2025",
+    note: "The car stole the scene. Let it.",
+    rotate: 9
+  }
+];
 
 // The Desk — six postcards. Swap picks, captions and notes freely;
 // any src from the gallery below works here too.

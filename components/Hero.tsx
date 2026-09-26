@@ -1,6 +1,10 @@
+"use client";
+
 import Image from "next/image";
+import { useState } from "react";
+import { motion } from "framer-motion";
 import Postcard from "./Postcard";
-import { heroPhoto } from "@/lib/photos";
+import { heroStack, type Photo } from "@/lib/photos";
 
 /**
  * Hand-drawn postal vignette: a perforated sun-and-sea stamp, cancelled by
@@ -51,20 +55,36 @@ function Postmark() {
   );
 }
 
-/** A matted print peeking out from the mail pile behind the hero postcard. */
-function PilePrint({ src, className }: { src: string; className: string }) {
+/** A matted print waiting in the pile; click to bring it to the front. */
+function PilePrint({ photo }: { photo: Photo }) {
   return (
-    <div aria-hidden className={`absolute w-[82%] ${className}`}>
-      <div className="bg-white p-2 pb-7 shadow-postcard">
-        <div className="relative aspect-[2/3] overflow-hidden bg-sand/30">
-          <Image src={src} alt="" fill sizes="30vw" draggable={false} className="object-cover object-[50%_20%]" />
-        </div>
+    <div className="bg-white p-2 pb-7 shadow-postcard">
+      <div className="relative aspect-[2/3] overflow-hidden bg-sand/30">
+        <Image
+          src={photo.src}
+          alt={photo.alt}
+          fill
+          sizes="30vw"
+          draggable={false}
+          className="object-cover object-[50%_20%]"
+        />
       </div>
     </div>
   );
 }
 
+const SWAP_SPRING = { type: "spring" as const, stiffness: 300, damping: 28 };
+
 export default function Hero() {
+  // stack[0] is the front postcard; the other two wait behind it.
+  const [stack, setStack] = useState(heroStack);
+
+  const promote = (id: string) =>
+    setStack((prev) => {
+      const next = prev.find((p) => p.id === id);
+      return next ? [next, ...prev.filter((p) => p.id !== id)] : prev;
+    });
+
   return (
     <section className="relative flex flex-wrap items-center gap-12 overflow-hidden px-6 pb-16 pt-20 md:px-14">
       {/* light leak — a warm wash bleeding in from the top right */}
@@ -96,14 +116,39 @@ export default function Hero() {
         </p>
       </div>
 
-      {/* the mail pile: two prints fanned out behind the postcard on top */}
+      {/* the mail pile: click a waiting print to shuffle it to the front */}
       <div className="flex min-w-0 flex-1 basis-[320px] justify-center">
         <div className="relative w-full max-w-[340px]">
-          <PilePrint src="/photos/maile0203.jpg" className="left-[-10%] top-[4%] -rotate-[11deg]" />
-          <PilePrint src="/photos/look-0331.jpg" className="right-[-9%] top-[1%] rotate-[9deg]" />
-          <div className="relative -rotate-3">
-            <Postcard photo={heroPhoto} />
-          </div>
+          <motion.button
+            type="button"
+            layoutId={stack[1].id}
+            transition={SWAP_SPRING}
+            style={{ rotate: -11 }}
+            className="absolute left-[-10%] top-[4%] w-[82%]"
+            onClick={() => promote(stack[1].id)}
+            aria-label={`Bring the ${stack[1].caption} postcard to the front`}
+          >
+            <PilePrint photo={stack[1]} />
+          </motion.button>
+          <motion.button
+            type="button"
+            layoutId={stack[2].id}
+            transition={SWAP_SPRING}
+            style={{ rotate: 9 }}
+            className="absolute right-[-9%] top-[1%] w-[80%]"
+            onClick={() => promote(stack[2].id)}
+            aria-label={`Bring the ${stack[2].caption} postcard to the front`}
+          >
+            <PilePrint photo={stack[2]} />
+          </motion.button>
+          <motion.div
+            layoutId={stack[0].id}
+            transition={SWAP_SPRING}
+            style={{ rotate: -3 }}
+            className="relative"
+          >
+            <Postcard key={stack[0].id} photo={stack[0]} />
+          </motion.div>
         </div>
       </div>
     </section>
