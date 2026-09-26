@@ -26,6 +26,7 @@ Miami-based light with travel range: a photographer rooted in Miami's warm, sun-
 ## Capabilities and Constraints
 
 - 169-frame photo archive across named shoots (portrait, fashion campaign, swim/lifestyle, travel journal), web-optimized at 1800px.
+- The Darkroom offers a contact-sheet mode — a dense grid with the selects circled — built for art directors who scan archives that way.
 - Booking channels: Juanherrep@yahoo.com and Instagram @juanditobandito.
 - **Undecided / pending from the user:** hero tagline and About bio (bracketed placeholders), and the darkroom "Journal · <date>" captions, which are derived from file dates rather than confirmed shoot names.
 

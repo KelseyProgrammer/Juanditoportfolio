@@ -55,6 +55,12 @@ export const photos: Photo[] = [
   { id: "oleta", src: "/photos/oletanikki-016-copy.jpg", alt: "Nikki at Oleta River", caption: "Oleta — Nikki", note: "Golden hour at the river. Eaten alive by mosquitoes.", rotate: 1.5 }
 ];
 
+// The selects — frames featured on the Desk and in the hero pile.
+// These get the grease-pencil circle on the contact sheet.
+export const selects = Array.from(
+  new Set([...photos, ...heroStack].map((p) => p.src))
+);
+
 // The Darkroom — every frame in the archive, developed on scroll.
 export const gallery: GalleryPhoto[] = [
   { src: "/photos/a7a5342.jpg", alt: "Archive — photograph by Juandito", caption: "Archive", w: 1199, h: 1800 },

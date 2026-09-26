@@ -178,6 +178,13 @@ Paper has corners: border-radius is 0 on everything made of paper or ink — pos
 ### Navigation
 - Flat paper bar, 2px ink bottom rule; handwritten wordmark left (reads as a signature), Special Elite uppercase links right (hover: rust); wraps to a second row under 640px — no hamburger
 
+### Contact Sheet (the Darkroom's working mode)
+- A Prints / Contact Sheet toggle in the Darkroom header (active state: paper fill for Prints, safelight fill for Contact Sheet)
+- Sheet mode is a dense uniform grid (3→8 columns) of square thumbs on darkroom black, each with a tiny frame number — no develop theatrics; it exists for fast scanning
+- Selects (frames featured on the Desk or in the hero pile, from `selects` in lib/photos.ts) carry a rough red grease-pencil ellipse
+- Any frame opens in a lightbox: print on cream mat, caption + "· select" + FR number, Prev/Next/Close controls plus arrow-key and Escape support, background scroll locked
+- Mode switches hide rather than unmount, so developed prints stay developed
+
 ### Aperture Cursor (signature interaction, desktop only)
 - On fine-pointer devices the native cursor is replaced by a 2px rust lens ring (30px) with a center dot, gliding on a tight spring
 - Over links it grows to 44px; over photographs it dilates to 56px and shows four viewfinder focus ticks
