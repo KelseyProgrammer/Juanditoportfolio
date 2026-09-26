@@ -21,7 +21,8 @@ Miami-based light with travel range: a photographer rooted in Miami's warm, sun-
 ## Operating Context
 
 - Evaluated fast and mostly on mobile; the archive must carry the argument without explanation.
-- The site is a static Next.js 15 export served from the GitHub repo (KelseyProgrammer/Juanditoportfolio); photos live in `public/photos/` with the manifest in `lib/photos.ts`.
+- The site is a Next.js 15 app in the GitHub repo (KelseyProgrammer/Juanditoportfolio); photos live in `public/photos/` with the manifest in `lib/photos.ts`.
+- **Hosting:** live at https://juanditobandito.netlify.app on Netlify, connected to the GitHub repo — every push to `main` auto-deploys.
 
 ## Capabilities and Constraints
 
