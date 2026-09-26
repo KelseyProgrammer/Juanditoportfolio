@@ -15,6 +15,16 @@ body {
   color: #FBF6EC;
 }
 
+/* The aperture cursor replaces the native pointer on fine-pointer devices.
+   The class is added by ApertureCursor on mount, so if JS fails the native
+   cursor remains. */
+@media (pointer: fine) {
+  .aperture-active,
+  .aperture-active * {
+    cursor: none !important;
+  }
+}
+
 :focus-visible {
   outline: 2px solid #B0522E;
   outline-offset: 3px;

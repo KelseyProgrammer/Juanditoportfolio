@@ -178,6 +178,12 @@ Paper has corners: border-radius is 0 on everything made of paper or ink — pos
 ### Navigation
 - Flat paper bar, 2px ink bottom rule; handwritten wordmark left (reads as a signature), Special Elite uppercase links right (hover: rust); wraps to a second row under 640px — no hamburger
 
+### Aperture Cursor (signature interaction, desktop only)
+- On fine-pointer devices the native cursor is replaced by a 2px rust lens ring (30px) with a center dot, gliding on a tight spring
+- Over links it grows to 44px; over photographs it dilates to 56px and shows four viewfinder focus ticks
+- Clicking fires the shutter: an ink iris blinks inside the ring, and clicks on photographs add a 200ms white flash
+- Added only after JS mounts (`.aperture-active` on the root), so the native cursor survives without JS; touch devices never see it
+
 ### The Postmark (signature mark)
 - Hand-drawn SVG: double-ring circle ("MIAMI, FLA / PAR AVION / USA") with three wavy cancellation bars, in rust, rotated -6°; scales 150→200px. Pairs with stamp-voice eyebrow text.
 

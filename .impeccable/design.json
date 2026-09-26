@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-25T00:00:00Z",
+  "generatedAt": "2026-09-25T12:00:00Z",
   "title": "Design System: Juandito — Sun Journal",
   "extensions": {
     "colorMeta": {
@@ -8,70 +8,184 @@
         "role": "neutral",
         "displayName": "Sun-Bleached Paper",
         "canonical": "#F1E8D6",
-        "tonalRamp": ["#2E2A1F", "#4E4735", "#6F664C", "#918565", "#B3A57F", "#D4C6A3", "#F1E8D6", "#FAF5EA"]
+        "tonalRamp": [
+          "#2E2A1F",
+          "#4E4735",
+          "#6F664C",
+          "#918565",
+          "#B3A57F",
+          "#D4C6A3",
+          "#F1E8D6",
+          "#FAF5EA"
+        ]
       },
       "ink": {
         "role": "neutral",
         "displayName": "Warm Ink",
         "canonical": "#2E2620",
-        "tonalRamp": ["#0F0C09", "#1D1712", "#2E2620", "#4A3F35", "#6B5D50", "#93836F", "#BFB09B", "#E5DCCB"]
+        "tonalRamp": [
+          "#0F0C09",
+          "#1D1712",
+          "#2E2620",
+          "#4A3F35",
+          "#6B5D50",
+          "#93836F",
+          "#BFB09B",
+          "#E5DCCB"
+        ]
       },
       "inkfaint": {
         "role": "neutral",
         "displayName": "Faded Caption",
         "canonical": "#5C5245",
-        "tonalRamp": ["#17130E", "#2C261D", "#42392D", "#5C5245", "#7C7060", "#9E917F", "#C2B6A4", "#E5DDD0"]
+        "tonalRamp": [
+          "#17130E",
+          "#2C261D",
+          "#42392D",
+          "#5C5245",
+          "#7C7060",
+          "#9E917F",
+          "#C2B6A4",
+          "#E5DDD0"
+        ]
       },
       "rust": {
         "role": "primary",
         "displayName": "Postmark Rust",
         "canonical": "#B0522E",
-        "tonalRamp": ["#2B120A", "#4A1F10", "#6B2E17", "#8C401F", "#B0522E", "#C97B52", "#DFA687", "#F3D6C4"]
+        "tonalRamp": [
+          "#2B120A",
+          "#4A1F10",
+          "#6B2E17",
+          "#8C401F",
+          "#B0522E",
+          "#C97B52",
+          "#DFA687",
+          "#F3D6C4"
+        ]
       },
       "sand": {
         "role": "tertiary",
         "displayName": "Golden Hour Sand",
         "canonical": "#C98A4A",
-        "tonalRamp": ["#2E1E0D", "#4E3418", "#704B23", "#93622F", "#C98A4A", "#D9A671", "#E8C49C", "#F5E2CB"]
+        "tonalRamp": [
+          "#2E1E0D",
+          "#4E3418",
+          "#704B23",
+          "#93622F",
+          "#C98A4A",
+          "#D9A671",
+          "#E8C49C",
+          "#F5E2CB"
+        ]
       },
       "safelight": {
         "role": "tertiary",
         "displayName": "Safelight Red",
         "canonical": "#E5301F",
-        "tonalRamp": ["#330705", "#5C0F09", "#88170D", "#B62112", "#E5301F", "#EC6350", "#F39685", "#F9CBC2"]
+        "tonalRamp": [
+          "#330705",
+          "#5C0F09",
+          "#88170D",
+          "#B62112",
+          "#E5301F",
+          "#EC6350",
+          "#F39685",
+          "#F9CBC2"
+        ]
       },
       "darkroom": {
         "role": "neutral",
         "displayName": "Darkroom Black",
         "canonical": "#191410",
-        "tonalRamp": ["#191410", "#2E261E", "#453A2E", "#5D4F40", "#766453", "#9B8B77", "#C1B4A0", "#E5DDD0"]
+        "tonalRamp": [
+          "#191410",
+          "#2E261E",
+          "#453A2E",
+          "#5D4F40",
+          "#766453",
+          "#9B8B77",
+          "#C1B4A0",
+          "#E5DDD0"
+        ]
       },
       "postcard-cream": {
         "role": "neutral",
         "displayName": "Postcard Cream",
         "canonical": "#FBF6EC",
-        "tonalRamp": ["#322D22", "#544C39", "#776C52", "#9A8D6C", "#BDAF8B", "#DCD0AF", "#FBF6EC", "#FDFBF5"]
+        "tonalRamp": [
+          "#322D22",
+          "#544C39",
+          "#776C52",
+          "#9A8D6C",
+          "#BDAF8B",
+          "#DCD0AF",
+          "#FBF6EC",
+          "#FDFBF5"
+        ]
       }
     },
     "typographyMeta": {
-      "display": { "displayName": "Display Hand", "purpose": "Hero and section headlines; postcard-back notes. Rough brush-lettered caps (Rock Salt) — faded marker grit, fully legible; moderate sizes with 1.7 leading." },
-      "stamp": { "displayName": "Typewriter Stamp", "purpose": "All labels: nav, eyebrows, captions, frame numbers. Always uppercase and letterspaced." },
-      "body": { "displayName": "Body Sans", "purpose": "Bios and supporting prose only." }
+      "display": {
+        "displayName": "Display Hand",
+        "purpose": "Hero and section headlines; postcard-back notes. Rough brush-lettered caps (Rock Salt) — faded marker grit, fully legible; moderate sizes with 1.7 leading."
+      },
+      "stamp": {
+        "displayName": "Typewriter Stamp",
+        "purpose": "All labels: nav, eyebrows, captions, frame numbers. Always uppercase and letterspaced."
+      },
+      "body": {
+        "displayName": "Body Sans",
+        "purpose": "Bios and supporting prose only."
+      }
     },
     "shadows": [
-      { "name": "postcard", "value": "0 12px 28px rgba(46,38,32,0.18)", "purpose": "Paper objects at rest on light surfaces; warm ink-tinted." },
-      { "name": "postcard-lifted", "value": "0 30px 50px rgba(46,38,32,0.3)", "purpose": "While dragging a card; paired with scale 1.04 and doubled tilt." },
-      { "name": "print-dark", "value": "0 16px 40px rgba(0,0,0,0.5)", "purpose": "Darkroom prints against Darkroom Black." }
+      {
+        "name": "postcard",
+        "value": "0 12px 28px rgba(46,38,32,0.18)",
+        "purpose": "Paper objects at rest on light surfaces; warm ink-tinted."
+      },
+      {
+        "name": "postcard-lifted",
+        "value": "0 30px 50px rgba(46,38,32,0.3)",
+        "purpose": "While dragging a card; paired with scale 1.04 and doubled tilt."
+      },
+      {
+        "name": "print-dark",
+        "value": "0 16px 40px rgba(0,0,0,0.5)",
+        "purpose": "Darkroom prints against Darkroom Black."
+      }
     ],
     "motion": [
-      { "name": "develop", "value": "1.4s cubic-bezier(0.22, 1, 0.36, 1)", "purpose": "The darkroom develop pour: negative to full color, once per print on viewport entry." },
-      { "name": "spring-flip", "value": "spring(stiffness 260, damping 26)", "purpose": "Postcard 3D flip and back-to-top enter/exit." },
-      { "name": "spring-land", "value": "spring(stiffness 120, damping 16)", "purpose": "Desk card entrances and drag release landings." }
+      {
+        "name": "develop",
+        "value": "1.4s cubic-bezier(0.22, 1, 0.36, 1)",
+        "purpose": "The darkroom develop pour: negative to full color, once per print on viewport entry."
+      },
+      {
+        "name": "spring-flip",
+        "value": "spring(stiffness 260, damping 26)",
+        "purpose": "Postcard 3D flip and back-to-top enter/exit."
+      },
+      {
+        "name": "spring-land",
+        "value": "spring(stiffness 120, damping 16)",
+        "purpose": "Desk card entrances and drag release landings."
+      }
     ],
     "breakpoints": [
-      { "name": "sm", "value": "640px" },
-      { "name": "md", "value": "768px" },
-      { "name": "xl", "value": "1280px" }
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "768px"
+      },
+      {
+        "name": "xl",
+        "value": "1280px"
+      }
     ]
   },
   "components": [
@@ -139,11 +253,31 @@
       "One dark section (The Darkroom) as the counterweight to an otherwise cream site"
     ],
     "rules": [
-      { "name": "The Postmark Rule", "body": "Rust is stamped, not painted: it appears on ≤10% of any screen, always on small marks (labels, numbers, hovers, rings) and never as a background fill.", "section": "colors" },
-      { "name": "The One Dark Room Rule", "body": "Darkroom Black and Safelight Red exist only inside #darkroom. Every other surface lives on paper.", "section": "colors" },
-      { "name": "The Three Voices Rule", "body": "Handwriting speaks, typewriter stamps, sans explains. Never a fourth face; never one voice doing another's job (no handwritten captions in the stamp role, no typewriter paragraphs).", "section": "typography" },
-      { "name": "The Paper Casts, Chrome Doesn't Rule", "body": "If it isn't paper, it doesn't get a shadow. Sections divide with 2px ink rules, not elevation.", "section": "elevation" },
-      { "name": "The No-Radius Rule", "body": "Never rounded-md softening. A corner is sharp (0px) or a perfect circle (9999px); nothing in between.", "section": "shapes" }
+      {
+        "name": "The Postmark Rule",
+        "body": "Rust is stamped, not painted: it appears on ≤10% of any screen, always on small marks (labels, numbers, hovers, rings) and never as a background fill.",
+        "section": "colors"
+      },
+      {
+        "name": "The One Dark Room Rule",
+        "body": "Darkroom Black and Safelight Red exist only inside #darkroom. Every other surface lives on paper.",
+        "section": "colors"
+      },
+      {
+        "name": "The Three Voices Rule",
+        "body": "Handwriting speaks, typewriter stamps, sans explains. Never a fourth face; never one voice doing another's job (no handwritten captions in the stamp role, no typewriter paragraphs).",
+        "section": "typography"
+      },
+      {
+        "name": "The Paper Casts, Chrome Doesn't Rule",
+        "body": "If it isn't paper, it doesn't get a shadow. Sections divide with 2px ink rules, not elevation.",
+        "section": "elevation"
+      },
+      {
+        "name": "The No-Radius Rule",
+        "body": "Never rounded-md softening. A corner is sharp (0px) or a perfect circle (9999px); nothing in between.",
+        "section": "shapes"
+      }
     ],
     "dos": [
       "Do put every photograph on paper — a white or cream mat with a caption — never a borderless image block.",
