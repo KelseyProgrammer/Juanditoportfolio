@@ -21,7 +21,7 @@ const body = Work_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Juandito — Photography",
+  title: "Juandito Bandito — Photography",
   description: "Editorial, portrait, and travel photography. Postcards from the road."
 };
 
