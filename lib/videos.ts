@@ -1,5 +1,5 @@
 /**
- * Videos — motion frames for the Darkroom, hosted on Mux.
+ * Videos — the Movie Night channel lineup, hosted on Mux.
  *
  * Channels for Movie Night (components/MovieNight.tsx), in channel order —
  * CH 01 is index 0. A clip with a `series` slug ALSO rides that series'
@@ -24,8 +24,8 @@ export const videos: Video[] = [
   { playbackId: "ooM3rjqzpkaRtooEj7fo7mO5bsWvc1REi4EjlF69Yqs", title: "Brent Neale Jewelry", alt: "Close-up of a model brushing back her hair to show gold flower earrings and cocktail rings, greenery glowing behind", w: 16, h: 9, duration: 45 },
   { playbackId: "4AkVYlgDN4REGCgmjh3hKZwGYoy6lcSI7JdWs3Bmfas", title: "Brent Neale Ocean", alt: "Hands stacked with gemstone rings rest on a sheer peach dress among coastal rocks", w: 16, h: 9, duration: 49 },
   { playbackId: "s013cK018DiYMcMJ2HfrS7jz4da19o009vGOdM2vIRhLJE", title: "Veronica Beard Summer 26", alt: "A model in a black mini dress leans on a white seaside terrace beside an orange telescope viewer, the ocean behind her", w: 16, h: 9, duration: 25 },
-  { playbackId: "u3SuzN7COexl8SEr6Bd1wPlczzWeXVZpfaaIM0100dn8c", title: "Lily Pulitzer", alt: "A model in a fruit-appliqué cardigan and orange skirt strolls a produce market past crates of guavas and oranges", w: 9, h: 16, duration: 30 },
-  { playbackId: "U9MFWvetUKWBr77rcx1DyxPmOxkMIQWXbxHZ7V3CTpU", title: "Lily Pulitzer Summer 26", alt: "Two girls in pink dresses run hand in hand across a sunlit lawn under palm trees", w: 9, h: 16, duration: 22 },
+  { playbackId: "u3SuzN7COexl8SEr6Bd1wPlczzWeXVZpfaaIM0100dn8c", title: "Lilly Pulitzer", alt: "A model in a fruit-appliqué cardigan and orange skirt strolls a produce market past crates of guavas and oranges", w: 9, h: 16, duration: 30 },
+  { playbackId: "U9MFWvetUKWBr77rcx1DyxPmOxkMIQWXbxHZ7V3CTpU", title: "Lilly Pulitzer Summer 26", alt: "Two girls in pink dresses run hand in hand across a sunlit lawn under palm trees", w: 9, h: 16, duration: 22 },
   { playbackId: "oTJ537mPs9h6nKWOmGO02BMNvBwvjn1kFD2P5XbgsDGY", title: "CARACARA NYC", alt: "A braided bridle and green lead rope hang from a white pasture fence, hills soft in the distance", w: 9, h: 16, duration: 34, posterTime: 10 },
   { playbackId: "aW7OLKOaYPWaASUUhq0100k5SawhZcqPv9iS8WMKeXb64", title: "BC Surf and Sport", alt: "A tattooed surfer in a tie-dye bikini carries her board along the shore by a weathered pier", w: 9, h: 16, duration: 50 },
   { playbackId: "SEI128cL8QK87TOVAoOxN9TO8MF4Ou73Dps8bdcbGyM", title: "West Palm Beach Magazine", alt: "Sun falls across a navy Honey Fitz presidential-yacht pillow on a deck chair aboard the yacht", w: 9, h: 16, duration: 104 },
