@@ -92,6 +92,7 @@ function buildSeries(): Series[] {
   // Clips append to the end of their series' strip, in videos-array order.
   const videosBySlug = new Map<string, VideoFrame[]>();
   videos.forEach((video, videoIndex) => {
+    if (!video.series) return; // TV-only clip — Movie Night is its home
     if (!bySlug.has(video.series)) {
       if (process.env.NODE_ENV !== "production") {
         console.warn(`[series] video "${video.playbackId}" names unknown series "${video.series}" — skipped`);

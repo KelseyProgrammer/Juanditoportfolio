@@ -1,29 +1,34 @@
 /**
  * Videos — motion frames for the Darkroom, hosted on Mux.
  *
- * Nothing here until the client's footage arrives. To add clips:
- *
- *   1. Set MUX_TOKEN_ID / MUX_TOKEN_SECRET (Mux dashboard → Settings →
- *      Access Tokens, "Mux Video" read+write).
- *   2. Run:  node scripts/mux-ingest.mjs <files or URLs...>
- *   3. Paste the printed entries below and fill in `series` + `alt`.
- *
- * Each video appends to the end of its series' film strip, labeled
- * MOV 01, MOV 02, … in array order. See docs/VIDEO.md for the full
- * runbook.
+ * Channels for Movie Night (components/MovieNight.tsx), in channel order —
+ * CH 01 is index 0. A clip with a `series` slug ALSO rides that series'
+ * film strip as a MOV frame, labeled MOV 01, MOV 02, … in array order.
+ * See docs/VIDEO.md for the runbook.
  */
 
 export type Video = {
-  playbackId: string; // Mux playback ID (public policy)
-  series: string;     // slug of the series this clip belongs to (see lib/series.ts)
-  alt: string;        // what the clip shows, for screen readers
-  w: number;          // aspect ratio, e.g. 16 x 9 — exact pixels not needed
+  playbackId: string;  // Mux playback ID (public policy)
+  title: string;       // channel display name, e.g. "Brent Neale Jewelry"
+  alt: string;         // what the clip shows, for screen readers
+  w: number;           // aspect ratio, e.g. 16 x 9 — exact pixels not needed
   h: number;
-  duration: number;   // seconds, rounded
+  duration: number;    // seconds, rounded
+  series?: string;     // slug of a photo series this clip also joins (lib/series.ts)
+  posterTime?: number; // seconds — poster frame, when the clip opens on a blank frame
 };
 
 export const videos: Video[] = [
-  // { playbackId: "abc123", series: "zan", alt: "Zan — behind the scenes", w: 16, h: 9, duration: 47 },
+  { playbackId: "1x4SJ5h00d9YCottD7y7NRTuBZlZ3iXe4Exx77iJ7cf00", title: "Find the Light", alt: "A model in a wide-brimmed straw hat tied with a peach ribbon closes her eyes in the sun against a deep blue sky", w: 16, h: 9, duration: 92 },
+  { playbackId: "ZffZ234XJ02957n3zaMipjiYRh2lTncncYutMmMFIZRg", title: "Maile", alt: "Maile smiles against a wooden fence in a snakeskin-print dress, pink daisies double-exposed over the frame", w: 16, h: 9, duration: 59, series: "maile" },
+  { playbackId: "ooM3rjqzpkaRtooEj7fo7mO5bsWvc1REi4EjlF69Yqs", title: "Brent Neale Jewelry", alt: "Close-up of a model brushing back her hair to show gold flower earrings and cocktail rings, greenery glowing behind", w: 16, h: 9, duration: 45 },
+  { playbackId: "4AkVYlgDN4REGCgmjh3hKZwGYoy6lcSI7JdWs3Bmfas", title: "Brent Neale Ocean", alt: "Hands stacked with gemstone rings rest on a sheer peach dress among coastal rocks", w: 16, h: 9, duration: 49 },
+  { playbackId: "s013cK018DiYMcMJ2HfrS7jz4da19o009vGOdM2vIRhLJE", title: "Veronica Beard Summer 26", alt: "A model in a black mini dress leans on a white seaside terrace beside an orange telescope viewer, the ocean behind her", w: 16, h: 9, duration: 25 },
+  { playbackId: "u3SuzN7COexl8SEr6Bd1wPlczzWeXVZpfaaIM0100dn8c", title: "Lily Pulitzer", alt: "A model in a fruit-appliqué cardigan and orange skirt strolls a produce market past crates of guavas and oranges", w: 9, h: 16, duration: 30 },
+  { playbackId: "U9MFWvetUKWBr77rcx1DyxPmOxkMIQWXbxHZ7V3CTpU", title: "Lily Pulitzer Summer 26", alt: "Two girls in pink dresses run hand in hand across a sunlit lawn under palm trees", w: 9, h: 16, duration: 22 },
+  { playbackId: "oTJ537mPs9h6nKWOmGO02BMNvBwvjn1kFD2P5XbgsDGY", title: "CARACARA NYC", alt: "A braided bridle and green lead rope hang from a white pasture fence, hills soft in the distance", w: 9, h: 16, duration: 34, posterTime: 10 },
+  { playbackId: "aW7OLKOaYPWaASUUhq0100k5SawhZcqPv9iS8WMKeXb64", title: "BC Surf and Sport", alt: "A tattooed surfer in a tie-dye bikini carries her board along the shore by a weathered pier", w: 9, h: 16, duration: 50 },
+  { playbackId: "SEI128cL8QK87TOVAoOxN9TO8MF4Ou73Dps8bdcbGyM", title: "West Palm Beach Magazine", alt: "Sun falls across a navy Honey Fitz presidential-yacht pillow on a deck chair aboard the yacht", w: 9, h: 16, duration: 104 },
 ];
 
 /**
@@ -34,8 +39,8 @@ export const videos: Video[] = [
 export const MUX_ENV_KEY = "3rclipmvit6nptb9shbp02en7";
 
 /** Poster frame served straight from Mux (no upload needed). */
-export const muxPoster = (playbackId: string, width = 1200) =>
-  `https://image.mux.com/${playbackId}/thumbnail.jpg?width=${width}`;
+export const muxPoster = (playbackId: string, width = 1200, time?: number) =>
+  `https://image.mux.com/${playbackId}/thumbnail.jpg?width=${width}${time !== undefined ? `&time=${time}` : ""}`;
 
 /** 47 → "0:47", 143 → "2:23" */
 export const formatDuration = (seconds: number) => {
