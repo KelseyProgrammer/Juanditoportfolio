@@ -209,12 +209,12 @@ export default function FilmStrip({ series, onClose, layoutId }: FilmStripProps)
                 <MuxPlayer
                   key={frame.video.playbackId}
                   playbackId={frame.video.playbackId}
-                  poster={muxPoster(frame.video.playbackId)}
+                  poster={muxPoster(frame.video.playbackId, 1200, frame.video.posterTime)}
                   streamType="on-demand"
                   preload="none"
                   accentColor="#E5301F"
                   envKey={MUX_ENV_KEY}
-                  metadata={{ video_title: frame.video.alt }}
+                  metadata={{ video_title: frame.video.title }}
                   style={{ height: "100%", width: "100%" }}
                 />
               )}
@@ -273,7 +273,7 @@ export default function FilmStrip({ series, onClose, layoutId }: FilmStripProps)
               >
                 <span className="relative block h-16 w-24 overflow-hidden bg-black">
                   <Image
-                    src={f.kind === "photo" ? f.photo.src : muxPoster(f.video.playbackId, 192)}
+                    src={f.kind === "photo" ? f.photo.src : muxPoster(f.video.playbackId, 192, f.video.posterTime)}
                     alt=""
                     fill
                     sizes="96px"

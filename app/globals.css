@@ -98,7 +98,8 @@ body {
 
 /* Analog static: one SVG-turbulence tile, jittered with hard steps so it
    reads as broadcast snow. No canvas, no runtime filters — the tile is
-   rasterized once and only background-position animates. */
+   rasterized once and only background-position animates (a paint, not
+   a composite — cheap for a cached raster at ~12 steps/sec). */
 .tv-static {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   background-size: 256px 256px;
@@ -131,6 +132,7 @@ body {
 .tv-osd {
   animation: tv-osd 1.5s ease-out both;
   text-shadow: 0 0 6px rgba(241, 232, 214, 0.9);
+  pointer-events: none;
 }
 
 @keyframes tv-osd {
@@ -152,9 +154,12 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .tv-static,
+  .tv-static {
+    animation: none;
+  }
   .tv-off {
     animation: none;
+    opacity: 0;
   }
   .tv-osd {
     animation: none;
