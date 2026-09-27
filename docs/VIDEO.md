@@ -1,9 +1,10 @@
-# Video support — built on Mux, waiting on footage
+# Video support — built on Mux
 
-**Status: the site side is DONE.** Video frames render in the film strip
-(Mux player, posters, MOV labels, duration chips, preload="none"), and
-`scripts/mux-ingest.mjs` turns raw files into paste-ready data entries.
-The only missing pieces are a Mux account and the client's clips.
+**Status: LIVE.** The client's 10 clips are ingested to Mux and play in two
+places: the **Movie Night** CRT section (`components/MovieNight.tsx`, all 10
+as channels CH 01–10 in `lib/videos.ts` array order) and — for clips with a
+`series` slug — the end of that series' film strip as MOV frames (currently
+just Maile). Design spec: `docs/superpowers/specs/2026-09-26-movie-night-design.md`.
 
 ## Go-live runbook (when the Dropbox arrives)
 
@@ -30,8 +31,13 @@ The only missing pieces are a Mux account and the client's clips.
 Design notes: clips play only on tap (`preload="none"`, poster from
 `image.mux.com` — no video bytes otherwise), controls are the Mux player
 with the safelight-red accent, and a video is never a series hero (stills
-carry the develop effect). A video-only series isn't supported yet — every
-clip attaches to an existing photo series.
+carry the develop effect). A video-only series isn't supported — clips
+without a photo series live on the Movie Night TV instead.
+
+**Note (2026-09):** `Video` now has `title` (channel display name) and
+`series` is optional — a clip with no `series` lives only on the TV.
+`scripts/mux-ingest.mjs` still prints the old entry shape; after pasting,
+add `title` and drop `series` unless the clip should also join a film strip.
 
 ---
 
