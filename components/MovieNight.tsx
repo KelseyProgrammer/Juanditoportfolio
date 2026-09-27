@@ -24,6 +24,9 @@ const MuxPlayer = dynamic(() => import("@mux/mux-player-react"), { ssr: false })
 
 const STATIC_BURST_MS = 400;
 const POWER_OFF_MS = 350;
+// Generous enough that a cold first power-on (player chunk + manifest)
+// doesn't flash the fallback Play button while autoplay is still in flight.
+const STALL_CHECK_MS = 2500;
 
 const pad = (n: number) => String(n).padStart(2, "0");
 
@@ -70,7 +73,7 @@ export default function MovieNight() {
       return;
     }
     setStalled(false);
-    stallTimer.current = setTimeout(() => setStalled(true), 1500);
+    stallTimer.current = setTimeout(() => setStalled(true), STALL_CHECK_MS);
     return () => clearTimeout(stallTimer.current);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [power, channel, armed, reduceMotion, error]);
@@ -139,7 +142,13 @@ export default function MovieNight() {
       nativeEl.webkitEnterFullscreen();
       return;
     }
-    el?.requestFullscreen?.().catch(() => nativeEl?.webkitEnterFullscreen?.());
+    // Old iPads (pre-16.4) have no element fullscreen at all — go straight
+    // to the native video there instead of silently no-opping.
+    if (el?.requestFullscreen) {
+      el.requestFullscreen().catch(() => nativeEl?.webkitEnterFullscreen?.());
+    } else {
+      nativeEl?.webkitEnterFullscreen?.();
+    }
   };
 
   const knob =
