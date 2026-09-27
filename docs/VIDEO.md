@@ -6,7 +6,7 @@ as channels CH 01–10 in `lib/videos.ts` array order) and — for clips with a
 `series` slug — the end of that series' film strip as MOV frames (currently
 just Maile). Design spec: `docs/superpowers/specs/2026-09-26-movie-night-design.md`.
 
-## Go-live runbook (when the Dropbox arrives)
+## Runbook (adding future clips)
 
 1. **Once:** create a Mux account at mux.com (card required; usage at this
    scale sits inside the free 100k delivery minutes + $20/mo PAYG credit).

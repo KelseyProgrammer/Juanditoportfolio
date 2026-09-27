@@ -64,6 +64,10 @@ initial curation — 16:9 lead, easily reshuffled):
 implementation time; poster frames at `image.mux.com/<id>/thumbnail.jpg` show
 the content).
 
+**Post-implementation note:** the client's filenames (and this table) carry a
+brand typo — the shipped titles for CH 06/07 use the correct spelling
+**"Lilly Pulitzer"** (two l's). Don't "fix" the code back to match this table.
+
 `lib/series.ts` change: in `buildSeries()`, videos with no `series` are
 skipped silently (today an unknown slug warns; `undefined` must not warn).
 Everything else in the Darkroom is untouched.

@@ -75,7 +75,6 @@ export default function MovieNight() {
     setStalled(false);
     stallTimer.current = setTimeout(() => setStalled(true), STALL_CHECK_MS);
     return () => clearTimeout(stallTimer.current);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [power, channel, armed, reduceMotion, error]);
 
   if (videos.length === 0) return null;
@@ -309,7 +308,7 @@ export default function MovieNight() {
                 onClick={() => changeChannel(1)}
                 disabled={!power}
                 aria-label="Next channel (dial)"
-                className="relative h-11 w-11 rounded-full border-2 border-[#F1E8D6]/40 bg-black transition-transform duration-300 disabled:pointer-events-none disabled:opacity-30 md:h-12 md:w-12"
+                className="relative h-11 w-11 rounded-full border-2 border-[#F1E8D6]/40 bg-black transition-transform duration-300 motion-reduce:transition-none disabled:pointer-events-none disabled:opacity-30 md:h-12 md:w-12"
                 style={{ transform: `rotate(${turns * (360 / videos.length)}deg)` }}
               >
                 <span
