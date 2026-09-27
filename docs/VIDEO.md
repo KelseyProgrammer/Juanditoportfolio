@@ -39,6 +39,13 @@ without a photo series live on the Movie Night TV instead.
 `scripts/mux-ingest.mjs` still prints the old entry shape; after pasting,
 add `title` and drop `series` unless the clip should also join a film strip.
 
+**Note (2026-09, later):** the TV is now a photograph (`public/tv/tv-frame.webp`,
+screen glass punched to transparency) with the video playing behind it and
+invisible buttons over the photo's real controls. If the source photo ever
+changes, re-run `node scripts/prepare-tv-frame.mjs` — it rebuilds the assets
+from `public/tv/tv-frame-original.png` and prints the geometry constants to
+paste into the `TV` object in `components/MovieNight.tsx`.
+
 ---
 
 ## Original proposal (September 2026)

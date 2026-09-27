@@ -11,12 +11,22 @@ import { videos, muxPoster, formatDuration, MUX_ENV_KEY } from "@/lib/videos";
 const MuxPlayer = dynamic(() => import("@mux/mux-player-react"), { ssr: false });
 
 /**
- * Movie Night — the motion archive as an old CRT television.
+ * Movie Night — the motion archive playing on a photographed vintage TV.
+ *
+ * The set is public/tv/tv-frame.webp with the screen glass punched to
+ * transparency (scripts/prepare-tv-frame.mjs), so the video sits BEHIND
+ * the photo and shows through the tube hole — the bronze bezel naturally
+ * overlaps the picture. Controls are invisible buttons positioned over
+ * the photo's real dial/buttons (md+, with typewriter labels off the
+ * cabinet's right edge); phones get a 44px knob strip under the label
+ * plate instead, because four stacked photo buttons at 330px wide can't
+ * give honest tap targets. The dial is a circular cutout of the photo's
+ * own knob, rotated to the current channel; drag or click it to surf.
  *
  * Off by default (no video bytes). The power switch is the user gesture:
  * from then on every channel is a live broadcast — flip to it and it's
- * already playing, muted, behind a burst of static. The dial and CH keys
- * surf; clips auto-advance to the next channel when they end.
+ * already playing, muted, behind a burst of static. Clips auto-advance
+ * to the next channel when they end.
  *
  * Reduced motion: no static, no flicker, and channels wait as poster
  * frames behind an explicit play button instead of autoplaying.
@@ -27,6 +37,32 @@ const POWER_OFF_MS = 350;
 // Generous enough that a cold first power-on (player chunk + manifest)
 // doesn't flash the fallback Play button while autoplay is still in flight.
 const STALL_CHECK_MS = 2500;
+
+// Geometry measured from the photo by scripts/prepare-tv-frame.mjs,
+// as % of the cropped frame (1948×1588). Re-run that script if the
+// source image ever changes — it prints this block.
+const TV = {
+  aspect: "1948 / 1588",
+  screen: { left: 9.19, top: 8.12, width: 68.12, height: 64.48 },
+  dial: { left: 84.7, top: 13.98, width: 10.68, height: 13.1 },
+  buttons: [
+    { left: 87.37, top: 31.36, width: 4.62, height: 4.41 },
+    { left: 87.37, top: 37.85, width: 4.62, height: 4.22 },
+    { left: 87.37, top: 44.14, width: 4.62, height: 4.41 },
+    { left: 87.37, top: 51.57, width: 4.62, height: 4.22 },
+  ],
+  power: { left: 86.6, top: 61.96, width: 6.01, height: 6.74 },
+  powerLens: { left: 87.83, top: 63.6, width: 3.39, height: 3.15 },
+} as const;
+
+type Box = { left: number; top: number; width: number; height: number };
+const box = (b: Box) => ({
+  left: `${b.left}%`,
+  top: `${b.top}%`,
+  width: `${b.width}%`,
+  height: `${b.height}%`,
+});
+const centerY = (b: Box) => b.top + b.height / 2;
 
 const pad = (n: number) => String(n).padStart(2, "0");
 
@@ -46,6 +82,9 @@ export default function MovieNight() {
   const [canFullscreen, setCanFullscreen] = useState(false);
   const [stalled, setStalled] = useState(false); // autoplay never actually started
   const screenRef = useRef<HTMLDivElement>(null);
+  const dialRef = useRef<HTMLButtonElement>(null);
+  const drag = useRef<{ angle: number; acc: number } | null>(null);
+  const dialDragged = useRef(false);
   const burstTimer = useRef<ReturnType<typeof setTimeout>>();
   const offTimer = useRef<ReturnType<typeof setTimeout>>();
   const stallTimer = useRef<ReturnType<typeof setTimeout>>();
@@ -81,6 +120,7 @@ export default function MovieNight() {
 
   const video = videos[channel];
   const vertical = video.h > video.w;
+  const notch = 360 / videos.length;
 
   const staticBurst = () => {
     if (reduceMotion) return;
@@ -127,6 +167,57 @@ export default function MovieNight() {
     }
   };
 
+  // The dial turns by dragging: accumulate pointer rotation around the
+  // knob's center and click over a channel per 36° notch. A plain click
+  // (no meaningful rotation) advances one channel.
+  const dialAngle = (e: React.PointerEvent) => {
+    const r = dialRef.current!.getBoundingClientRect();
+    return (
+      (Math.atan2(
+        e.clientY - (r.top + r.height / 2),
+        e.clientX - (r.left + r.width / 2)
+      ) *
+        180) /
+      Math.PI
+    );
+  };
+  const onDialPointerDown = (e: React.PointerEvent) => {
+    if (!power) return;
+    dialRef.current?.setPointerCapture(e.pointerId);
+    drag.current = { angle: dialAngle(e), acc: 0 };
+    dialDragged.current = false;
+  };
+  const onDialPointerMove = (e: React.PointerEvent) => {
+    if (!drag.current) return;
+    const a = dialAngle(e);
+    let d = a - drag.current.angle;
+    if (d > 180) d -= 360;
+    else if (d < -180) d += 360;
+    drag.current.angle = a;
+    drag.current.acc += d;
+    while (drag.current.acc >= notch) {
+      drag.current.acc -= notch;
+      dialDragged.current = true;
+      changeChannel(1);
+    }
+    while (drag.current.acc <= -notch) {
+      drag.current.acc += notch;
+      dialDragged.current = true;
+      changeChannel(-1);
+    }
+    if (Math.abs(drag.current.acc) > 12) dialDragged.current = true;
+  };
+  const onDialPointerUp = () => {
+    drag.current = null;
+  };
+  const onDialClick = () => {
+    if (dialDragged.current) {
+      dialDragged.current = false;
+      return;
+    }
+    changeChannel(1);
+  };
+
   const goFullscreen = () => {
     const el = screenRef.current;
     // iPhone: only the native <video> may enter fullscreen. mux-player
@@ -150,8 +241,44 @@ export default function MovieNight() {
     }
   };
 
+  // Invisible hit areas over the photo's controls (lg+, where a pointer
+  // can hit a 30px button and the labels have room off the cabinet's
+  // right edge). Hover darkens the control slightly; pressing insets it —
+  // like pushing real plastic.
+  const overlay =
+    "absolute hidden cursor-pointer rounded-[6px] transition-colors duration-150 hover:bg-black/20 active:bg-black/40 active:shadow-[inset_0_2px_6px_rgba(0,0,0,0.65)] disabled:pointer-events-none lg:block";
+  const overlayLabel =
+    "pointer-events-none absolute hidden whitespace-nowrap font-stamp text-[9px] uppercase tracking-[0.14em] text-[#F1E8D6]/45 lg:block";
+
+  // Phone/tablet strip: honest 44px targets under the label plate.
   const knob =
-    "flex h-9 w-9 items-center justify-center border border-[#F1E8D6]/30 font-stamp text-[9px] uppercase tracking-[0.08em] text-[#F1E8D6]/70 transition-colors hover:text-[#F1E8D6] disabled:pointer-events-none disabled:opacity-30";
+    "flex h-11 w-11 items-center justify-center border border-[#F1E8D6]/30 font-stamp text-[9px] uppercase tracking-[0.08em] text-[#F1E8D6]/70 transition-colors hover:text-[#F1E8D6] disabled:pointer-events-none disabled:opacity-30";
+
+  const buttonActions: {
+    label: string;
+    text: string;
+    onClick: () => void;
+    disabled: boolean;
+    pressed?: boolean;
+    hidden?: boolean;
+  }[] = [
+    { label: "Channel up", text: "CH ▲", onClick: () => changeChannel(1), disabled: !power },
+    { label: "Channel down", text: "CH ▼", onClick: () => changeChannel(-1), disabled: !power },
+    {
+      label: "Sound",
+      text: "SND",
+      onClick: () => setMuted((m) => !m),
+      disabled: !power,
+      pressed: !muted,
+    },
+    {
+      label: "Watch fullscreen",
+      text: "ZOOM",
+      onClick: goFullscreen,
+      disabled: !power,
+      hidden: !canFullscreen,
+    },
+  ];
 
   return (
     <section
@@ -169,220 +296,291 @@ export default function MovieNight() {
 
       {/* The set */}
       <div className="mx-auto w-[min(88vw,720px)]" onKeyDown={onKeyDown}>
-        <div className="bg-ink p-3 shadow-[0_24px_60px_rgba(0,0,0,0.55)] md:p-5">
-          <div className="flex items-start gap-3 md:gap-5">
-            {/* Tube */}
-            <div
-              ref={screenRef}
-              className="relative aspect-[4/3] min-w-0 flex-1 overflow-hidden bg-black"
-            >
-              {/* Vertical clips sit on a bed of quiet static */}
-              {power && vertical && !reduceMotion && !error && (
-                <div aria-hidden className="tv-static absolute inset-0 opacity-30" />
-              )}
+        <div className="relative" style={{ aspectRatio: TV.aspect }}>
+          {/* Tube — everything here sits BEHIND the TV photo and shows
+              through the transparent screen hole */}
+          <div
+            ref={screenRef}
+            className="absolute overflow-hidden bg-black"
+            style={box(TV.screen)}
+          >
+            {/* Vertical clips sit on a bed of quiet static */}
+            {power && vertical && !reduceMotion && !error && (
+              <div aria-hidden className="tv-static absolute inset-0 opacity-30" />
+            )}
 
-              {power &&
-                !error &&
-                (reduceMotion && !armed ? (
-                  <>
-                    <Image
-                      src={muxPoster(video.playbackId, 960, video.posterTime)}
-                      alt={video.alt}
-                      fill
-                      sizes="(max-width: 768px) 88vw, 720px"
-                      className="object-contain"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setArmed(true)}
-                      aria-label={`Play ${video.title}`}
-                      className="absolute inset-0 z-10 flex items-center justify-center font-stamp text-sm uppercase tracking-[0.18em] text-[#F1E8D6]"
-                    >
-                      <span className="border border-[#E5301F]/70 bg-[#191410]/70 px-4 py-2 text-[#E5301F]">
-                        ▸ Play
-                      </span>
-                    </button>
-                  </>
-                ) : (
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div
-                      className="relative max-h-full max-w-full"
-                      style={{
-                        aspectRatio: `${video.w} / ${video.h}`,
-                        height: vertical ? "100%" : undefined,
-                        width: vertical ? undefined : "100%",
+            {power &&
+              !error &&
+              (reduceMotion && !armed ? (
+                <>
+                  <Image
+                    src={muxPoster(video.playbackId, 960, video.posterTime)}
+                    alt={video.alt}
+                    fill
+                    sizes="(max-width: 768px) 62vw, 500px"
+                    className={vertical ? "object-contain" : "object-cover"}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setArmed(true)}
+                    aria-label={`Play ${video.title}`}
+                    className="absolute inset-0 z-10 flex items-center justify-center font-stamp text-sm uppercase tracking-[0.18em] text-[#F1E8D6]"
+                  >
+                    <span className="border border-[#E5301F]/70 bg-[#191410]/70 px-4 py-2 text-[#E5301F]">
+                      ▸ Play
+                    </span>
+                  </button>
+                </>
+              ) : (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div
+                    className="relative max-h-full max-w-full"
+                    style={
+                      vertical
+                        ? { aspectRatio: `${video.w} / ${video.h}`, height: "100%" }
+                        : { width: "100%", height: "100%" }
+                    }
+                  >
+                    <MuxPlayer
+                      key={video.playbackId}
+                      playbackId={video.playbackId}
+                      poster={muxPoster(video.playbackId, 960, video.posterTime)}
+                      streamType="on-demand"
+                      autoPlay={muted ? "muted" : "any"}
+                      muted={muted}
+                      nohotkeys
+                      accentColor="#E5301F"
+                      envKey={MUX_ENV_KEY}
+                      metadata={{ video_title: video.title }}
+                      onEnded={() => changeChannel(1)}
+                      onError={() => setError(true)}
+                      onVolumeChange={(e) =>
+                        setMuted((e.currentTarget as HTMLMediaElement).muted)
+                      }
+                      onPlaying={() => {
+                        clearTimeout(stallTimer.current);
+                        setStalled(false);
                       }}
-                    >
-                      <MuxPlayer
-                        key={video.playbackId}
-                        playbackId={video.playbackId}
-                        poster={muxPoster(video.playbackId, 960, video.posterTime)}
-                        streamType="on-demand"
-                        autoPlay={muted ? "muted" : "any"}
-                        muted={muted}
-                        nohotkeys
-                        accentColor="#E5301F"
-                        envKey={MUX_ENV_KEY}
-                        metadata={{ video_title: video.title }}
-                        onEnded={() => changeChannel(1)}
-                        onError={() => setError(true)}
-                        onVolumeChange={(e) =>
-                          setMuted((e.currentTarget as HTMLMediaElement).muted)
-                        }
-                        onPlaying={() => {
-                          clearTimeout(stallTimer.current);
-                          setStalled(false);
-                        }}
-                        style={{
-                          "--controls": "none",
-                          height: "100%",
-                          width: "100%",
-                        }}
-                      />
-                    </div>
+                      style={{
+                        "--controls": "none",
+                        // The tube hole is the frame: landscape clips fill
+                        // it edge to edge, vertical ones keep their shape.
+                        "--media-object-fit": vertical ? "contain" : "cover",
+                        height: "100%",
+                        width: "100%",
+                      }}
+                    />
                   </div>
-                ))}
-
-              {/* Lost the feed */}
-              {power && error && (
-                <div className="tv-static absolute inset-0 z-10 flex items-center justify-center">
-                  <span className="bg-[#191410]/80 px-3 py-1 font-stamp text-xs uppercase tracking-[0.18em] text-[#F1E8D6]">
-                    No Signal
-                  </span>
                 </div>
-              )}
+              ))}
 
-              {/* Channel-change snow */}
-              {burst && <div aria-hidden className="tv-static absolute inset-0 z-20" />}
-
-              {/* Autoplay never actually started (e.g. Safari Low Power
-                  Mode) — surface an explicit play button on the live element. */}
-              {power && !error && stalled && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    const p = screenRef.current?.querySelector("mux-player") as
-                      | { play?: () => Promise<void> }
-                      | null;
-                    p?.play?.()?.catch?.(() => {});
-                  }}
-                  aria-label={`Play ${video.title}`}
-                  className="absolute inset-0 z-[25] flex items-center justify-center font-stamp text-sm uppercase tracking-[0.18em] text-[#F1E8D6]"
-                >
-                  <span className="border border-[#E5301F]/70 bg-[#191410]/70 px-4 py-2 text-[#E5301F]">
-                    ▸ Play
-                  </span>
-                </button>
-              )}
-
-              {/* Channel OSD */}
-              {power && !reduceMotion && (
-                <span
-                  key={osdKey}
-                  aria-hidden
-                  className="tv-osd absolute right-3 top-2 z-30 font-stamp text-lg tracking-[0.18em] text-[#F1E8D6]"
-                >
-                  CH {pad(channel + 1)}
+            {/* Lost the feed */}
+            {power && error && (
+              <div className="tv-static absolute inset-0 z-10 flex items-center justify-center">
+                <span className="bg-[#191410]/80 px-3 py-1 font-stamp text-xs uppercase tracking-[0.18em] text-[#F1E8D6]">
+                  No Signal
                 </span>
-              )}
+              </div>
+            )}
 
-              {/* Power-off collapse */}
-              {poweringOff && (
-                <div aria-hidden className="tv-off absolute inset-0 z-40 bg-[#FBF6EC]" />
-              )}
+            {/* Channel-change snow */}
+            {burst && <div aria-hidden className="tv-static absolute inset-0 z-20" />}
 
-              {/* Glass: scanlines + vignette while on, faint reflection while off */}
-              <div
+            {/* Autoplay never actually started (e.g. Safari Low Power
+                Mode) — surface an explicit play button on the live element. */}
+            {power && !error && stalled && (
+              <button
+                type="button"
+                onClick={() => {
+                  const p = screenRef.current?.querySelector("mux-player") as
+                    | { play?: () => Promise<void> }
+                    | null;
+                  p?.play?.()?.catch?.(() => {});
+                }}
+                aria-label={`Play ${video.title}`}
+                className="absolute inset-0 z-[25] flex items-center justify-center font-stamp text-sm uppercase tracking-[0.18em] text-[#F1E8D6]"
+              >
+                <span className="border border-[#E5301F]/70 bg-[#191410]/70 px-4 py-2 text-[#E5301F]">
+                  ▸ Play
+                </span>
+              </button>
+            )}
+
+            {/* Channel OSD */}
+            {power && !reduceMotion && (
+              <span
+                key={osdKey}
                 aria-hidden
-                className={`pointer-events-none absolute inset-0 z-30 ${
-                  power ? "tv-scanlines" : "tv-glass-off"
-                }`}
+                className="tv-osd absolute right-[6%] top-[4%] z-30 font-stamp text-lg tracking-[0.18em] text-[#F1E8D6]"
+              >
+                CH {pad(channel + 1)}
+              </span>
+            )}
+
+            {/* Power-off collapse */}
+            {poweringOff && (
+              <div aria-hidden className="tv-off absolute inset-0 z-40 bg-[#FBF6EC]" />
+            )}
+
+            {/* Glass: scanlines + vignette while on, faint reflection while off */}
+            <div
+              aria-hidden
+              className={`pointer-events-none absolute inset-0 z-30 ${
+                power ? "tv-scanlines" : "tv-glass-off"
+              }`}
+            />
+          </div>
+
+          {/* The set itself, screen hole punched to transparency */}
+          <Image
+            src="/tv/tv-frame.webp"
+            alt=""
+            aria-hidden
+            fill
+            sizes="(max-width: 768px) 88vw, 720px"
+            className="pointer-events-none z-10 select-none object-contain"
+          />
+
+          {/* The photo's own dial, cut out and rotated to the channel */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute z-20 transition-transform duration-300 motion-reduce:transition-none"
+            style={{ ...box(TV.dial), transform: `rotate(${turns * notch}deg)` }}
+          >
+            <Image src="/tv/tv-dial.webp" alt="" fill sizes="80px" className="select-none" />
+          </div>
+
+          {/* Power lens: dimmed while off, warm glow while on */}
+          <div
+            aria-hidden
+            className={`pointer-events-none absolute z-20 rounded-[4px] bg-[#160805]/80 transition-opacity duration-300 ${
+              power ? "opacity-0" : "opacity-100"
+            }`}
+            style={box(TV.powerLens)}
+          />
+          <div
+            aria-hidden
+            className={`pointer-events-none absolute z-20 transition-opacity duration-300 ${
+              power ? "opacity-100" : "opacity-0"
+            }`}
+            style={{
+              left: `${TV.powerLens.left + TV.powerLens.width / 2 - 4.5}%`,
+              top: `${TV.powerLens.top + TV.powerLens.height / 2 - 5.5}%`,
+              width: "9%",
+              height: "11%",
+              background:
+                "radial-gradient(ellipse at center, rgba(229,48,31,0.5), transparent 65%)",
+            }}
+          />
+
+          {/* Controls over the photo (md+); phones use the strip below */}
+          <button
+            ref={dialRef}
+            type="button"
+            onClick={onDialClick}
+            onPointerDown={onDialPointerDown}
+            onPointerMove={onDialPointerMove}
+            onPointerUp={onDialPointerUp}
+            onPointerCancel={onDialPointerUp}
+            disabled={!power}
+            aria-label="Next channel (dial)"
+            className={`${overlay} z-30 rounded-full`}
+            style={{ ...box(TV.dial), touchAction: "none" }}
+          />
+          <span className={overlayLabel} style={{ left: "101%", top: `${centerY(TV.dial)}%`, transform: "translateY(-50%)" }}>
+            ← dial · surf
+          </span>
+
+          {buttonActions.map((b, i) =>
+            b.hidden ? null : (
+              <button
+                key={b.text}
+                type="button"
+                onClick={b.onClick}
+                disabled={b.disabled}
+                aria-label={b.label}
+                aria-pressed={b.pressed}
+                className={`${overlay} z-30`}
+                style={box(TV.buttons[i])}
               />
-            </div>
+            )
+          )}
+          {buttonActions.map((b, i) =>
+            b.hidden ? null : (
+              <span
+                key={b.text}
+                className={`${overlayLabel} ${b.pressed ? "text-[#E5301F]" : ""}`}
+                style={{
+                  left: "101%",
+                  top: `${centerY(TV.buttons[i])}%`,
+                  transform: "translateY(-50%)",
+                }}
+              >
+                ← {b.text}
+              </span>
+            )
+          )}
 
-            {/* Control panel */}
-            <div className="flex w-11 shrink-0 flex-col items-center gap-2.5 self-stretch md:w-12">
-              {/* The dial — one notch per channel, pointer painted red */}
-              <button
-                type="button"
-                onClick={() => changeChannel(1)}
-                disabled={!power}
-                aria-label="Next channel (dial)"
-                className="relative h-11 w-11 rounded-full border-2 border-[#F1E8D6]/40 bg-black transition-transform duration-300 motion-reduce:transition-none disabled:pointer-events-none disabled:opacity-30 md:h-12 md:w-12"
-                style={{ transform: `rotate(${turns * (360 / videos.length)}deg)` }}
-              >
-                <span
-                  aria-hidden
-                  className="absolute left-1/2 top-1 h-3 w-0.5 -translate-x-1/2 bg-[#E5301F]"
-                />
-              </button>
-              <button
-                type="button"
-                onClick={() => changeChannel(1)}
-                disabled={!power}
-                aria-label="Channel up"
-                className={knob}
-              >
-                CH▲
-              </button>
-              <button
-                type="button"
-                onClick={() => changeChannel(-1)}
-                disabled={!power}
-                aria-label="Channel down"
-                className={knob}
-              >
-                CH▼
-              </button>
-              <button
-                type="button"
-                onClick={() => setMuted((m) => !m)}
-                disabled={!power}
-                aria-pressed={!muted}
-                aria-label="Sound"
-                className={`${knob} ${muted ? "" : "border-[#E5301F]/70 text-[#E5301F]"}`}
-              >
-                Snd
-              </button>
-              {canFullscreen && (
-                <button
-                  type="button"
-                  onClick={goFullscreen}
-                  disabled={!power}
-                  aria-label="Watch fullscreen"
-                  className={knob}
-                >
-                  Zoom
-                </button>
-              )}
-              <button
-                type="button"
-                onClick={() => (power ? powerOff() : powerOn())}
-                aria-pressed={power}
-                aria-label="Power"
-                className={`mt-auto flex h-9 w-9 items-center justify-center border font-stamp text-[9px] uppercase tracking-[0.08em] transition-colors ${
-                  power
-                    ? "border-[#E5301F] bg-[#E5301F] text-[#191410]"
-                    : "border-[#E5301F]/60 text-[#E5301F] hover:bg-[#E5301F]/15"
-                }`}
-              >
-                Pwr
-              </button>
-            </div>
-          </div>
+          <button
+            type="button"
+            onClick={() => (power ? powerOff() : powerOn())}
+            aria-pressed={power}
+            aria-label="Power"
+            className={`${overlay} z-30`}
+            style={box(TV.power)}
+          />
+          <span
+            className={`${overlayLabel} ${power ? "text-[#E5301F]/80" : ""}`}
+            style={{ left: "101%", top: `${centerY(TV.power)}%`, transform: "translateY(-50%)" }}
+          >
+            ← PWR
+          </span>
+        </div>
 
-          {/* Label plate */}
-          <div className="mt-3 flex items-baseline justify-between gap-4 border-t border-[#F1E8D6]/15 pt-2 font-stamp text-[11px] uppercase tracking-[0.18em]">
-            <span className="truncate text-[#F1E8D6]/70">
-              {power ? video.title : "Juandito Broadcasting"}
-            </span>
-            <span role="status" className="shrink-0 text-[#E5301F]/80">
-              {power
-                ? `CH ${pad(channel + 1)}/${pad(videos.length)} · ${formatDuration(video.duration)}`
-                : "Off Air"}
-              {power && <span className="sr-only"> — {video.title}</span>}
-            </span>
-          </div>
+        {/* Label plate */}
+        <div className="mt-3 flex items-baseline justify-between gap-4 border-t border-[#F1E8D6]/15 pt-2 font-stamp text-[11px] uppercase tracking-[0.18em]">
+          <span className="truncate text-[#F1E8D6]/70">
+            {power ? video.title : "Juandito Broadcasting"}
+          </span>
+          <span role="status" className="shrink-0 text-[#E5301F]/80">
+            {power
+              ? `CH ${pad(channel + 1)}/${pad(videos.length)} · ${formatDuration(video.duration)}`
+              : "Off Air"}
+            {power && <span className="sr-only"> — {video.title}</span>}
+          </span>
+        </div>
+
+        {/* Touch controls: below lg the photo's buttons are too small to
+            tap honestly, so give real 44px targets here instead */}
+        <div className="mt-3 flex justify-center gap-2.5 lg:hidden">
+          {buttonActions.map((b) =>
+            b.hidden ? null : (
+              <button
+                key={b.text}
+                type="button"
+                onClick={b.onClick}
+                disabled={b.disabled}
+                aria-label={b.label}
+                aria-pressed={b.pressed}
+                className={`${knob} ${b.pressed ? "border-[#E5301F]/70 text-[#E5301F]" : ""}`}
+              >
+                {b.text.replace(" ", "")}
+              </button>
+            )
+          )}
+          <button
+            type="button"
+            onClick={() => (power ? powerOff() : powerOn())}
+            aria-pressed={power}
+            aria-label="Power"
+            className={`flex h-11 w-11 items-center justify-center border font-stamp text-[9px] uppercase tracking-[0.08em] transition-colors ${
+              power
+                ? "border-[#E5301F] bg-[#E5301F] text-[#191410]"
+                : "border-[#E5301F]/60 text-[#E5301F] hover:bg-[#E5301F]/15"
+            }`}
+          >
+            PWR
+          </button>
         </div>
       </div>
     </section>
