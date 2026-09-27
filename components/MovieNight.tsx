@@ -41,9 +41,11 @@ export default function MovieNight() {
   const [error, setError] = useState(false);
   const [armed, setArmed] = useState(false); // reduced-motion: play pressed
   const [canFullscreen, setCanFullscreen] = useState(false);
+  const [stalled, setStalled] = useState(false); // autoplay never actually started
   const screenRef = useRef<HTMLDivElement>(null);
   const burstTimer = useRef<ReturnType<typeof setTimeout>>();
   const offTimer = useRef<ReturnType<typeof setTimeout>>();
+  const stallTimer = useRef<ReturnType<typeof setTimeout>>();
 
   useEffect(() => {
     // iPhone Safari has no element fullscreen; we fall back to the native
@@ -54,8 +56,24 @@ export default function MovieNight() {
     return () => {
       clearTimeout(burstTimer.current);
       clearTimeout(offTimer.current);
+      clearTimeout(stallTimer.current);
     };
   }, []);
+
+  // Safari (especially Low Power Mode) can silently reject autoplay,
+  // leaving a frozen poster with chrome hidden. If the player hasn't
+  // fired "playing" shortly after mount, surface an explicit Play button.
+  useEffect(() => {
+    clearTimeout(stallTimer.current);
+    if (!power || error || (reduceMotion && !armed)) {
+      setStalled(false);
+      return;
+    }
+    setStalled(false);
+    stallTimer.current = setTimeout(() => setStalled(true), 1500);
+    return () => clearTimeout(stallTimer.current);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [power, channel, armed, reduceMotion, error]);
 
   if (videos.length === 0) return null;
 
@@ -87,6 +105,7 @@ export default function MovieNight() {
   };
 
   const powerOff = () => {
+    if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
     setPower(false);
     if (reduceMotion) return;
     setPoweringOff(true);
@@ -108,16 +127,19 @@ export default function MovieNight() {
 
   const goFullscreen = () => {
     const el = screenRef.current;
-    if (el?.requestFullscreen) {
-      el.requestFullscreen();
-      return;
-    }
     // iPhone: only the native <video> may enter fullscreen. mux-player
     // exposes it as .media.nativeEl on the custom element.
     const player = el?.querySelector("mux-player") as
       | { media?: { nativeEl?: HTMLVideoElement & { webkitEnterFullscreen?: () => void } } }
       | null;
-    player?.media?.nativeEl?.webkitEnterFullscreen?.();
+    const nativeEl = player?.media?.nativeEl;
+    // Native video fullscreen rotates/controls better on iPhone even where
+    // element fullscreen exists (iOS 16.4+), so prefer it there outright.
+    if (/iPhone/.test(navigator.userAgent) && nativeEl?.webkitEnterFullscreen) {
+      nativeEl.webkitEnterFullscreen();
+      return;
+    }
+    el?.requestFullscreen?.().catch(() => nativeEl?.webkitEnterFullscreen?.());
   };
 
   const knob =
@@ -140,7 +162,7 @@ export default function MovieNight() {
       {/* The set */}
       <div className="mx-auto w-[min(88vw,720px)]" onKeyDown={onKeyDown}>
         <div className="bg-ink p-3 shadow-[0_24px_60px_rgba(0,0,0,0.55)] md:p-5">
-          <div className="flex gap-3 md:gap-5">
+          <div className="flex items-start gap-3 md:gap-5">
             {/* Tube */}
             <div
               ref={screenRef}
@@ -188,7 +210,7 @@ export default function MovieNight() {
                         playbackId={video.playbackId}
                         poster={muxPoster(video.playbackId, 960, video.posterTime)}
                         streamType="on-demand"
-                        autoPlay
+                        autoPlay={muted ? "muted" : "any"}
                         muted={muted}
                         nohotkeys
                         accentColor="#E5301F"
@@ -196,6 +218,13 @@ export default function MovieNight() {
                         metadata={{ video_title: video.title }}
                         onEnded={() => changeChannel(1)}
                         onError={() => setError(true)}
+                        onVolumeChange={(e) =>
+                          setMuted((e.currentTarget as HTMLMediaElement).muted)
+                        }
+                        onPlaying={() => {
+                          clearTimeout(stallTimer.current);
+                          setStalled(false);
+                        }}
                         style={{
                           "--controls": "none",
                           height: "100%",
@@ -217,6 +246,26 @@ export default function MovieNight() {
 
               {/* Channel-change snow */}
               {burst && <div aria-hidden className="tv-static absolute inset-0 z-20" />}
+
+              {/* Autoplay never actually started (e.g. Safari Low Power
+                  Mode) — surface an explicit play button on the live element. */}
+              {power && !error && stalled && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    const p = screenRef.current?.querySelector("mux-player") as
+                      | { play?: () => Promise<void> }
+                      | null;
+                    p?.play?.()?.catch?.(() => {});
+                  }}
+                  aria-label={`Play ${video.title}`}
+                  className="absolute inset-0 z-[25] flex items-center justify-center font-stamp text-sm uppercase tracking-[0.18em] text-[#F1E8D6]"
+                >
+                  <span className="border border-[#E5301F]/70 bg-[#191410]/70 px-4 py-2 text-[#E5301F]">
+                    ▸ Play
+                  </span>
+                </button>
+              )}
 
               {/* Channel OSD */}
               {power && !reduceMotion && (
@@ -244,7 +293,7 @@ export default function MovieNight() {
             </div>
 
             {/* Control panel */}
-            <div className="flex w-11 shrink-0 flex-col items-center gap-2.5 md:w-12">
+            <div className="flex w-11 shrink-0 flex-col items-center gap-2.5 self-stretch md:w-12">
               {/* The dial — one notch per channel, pointer painted red */}
               <button
                 type="button"
@@ -282,7 +331,7 @@ export default function MovieNight() {
                 onClick={() => setMuted((m) => !m)}
                 disabled={!power}
                 aria-pressed={!muted}
-                aria-label={muted ? "Turn sound on" : "Turn sound off"}
+                aria-label="Sound"
                 className={`${knob} ${muted ? "" : "border-[#E5301F]/70 text-[#E5301F]"}`}
               >
                 Snd
@@ -302,7 +351,7 @@ export default function MovieNight() {
                 type="button"
                 onClick={() => (power ? powerOff() : powerOn())}
                 aria-pressed={power}
-                aria-label={power ? "Turn the TV off" : "Turn the TV on"}
+                aria-label="Power"
                 className={`mt-auto flex h-9 w-9 items-center justify-center border font-stamp text-[9px] uppercase tracking-[0.08em] transition-colors ${
                   power
                     ? "border-[#E5301F] bg-[#E5301F] text-[#191410]"
@@ -323,6 +372,7 @@ export default function MovieNight() {
               {power
                 ? `CH ${pad(channel + 1)}/${pad(videos.length)} · ${formatDuration(video.duration)}`
                 : "Off Air"}
+              {power && <span className="sr-only"> — {video.title}</span>}
             </span>
           </div>
         </div>
