@@ -2,6 +2,7 @@ import Nav from "@/components/Nav";
 import Hero from "@/components/Hero";
 import PostcardWall from "@/components/PostcardWall";
 import Darkroom from "@/components/Darkroom";
+import MovieNight from "@/components/MovieNight";
 import About from "@/components/About";
 import Contact from "@/components/Contact";
 import BackToTop from "@/components/BackToTop";
@@ -14,6 +15,7 @@ export default function Home() {
       <Hero />
       <PostcardWall />
       <Darkroom />
+      <MovieNight />
       <About />
       <Contact />
       <BackToTop />
